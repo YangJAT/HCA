@@ -1,3 +1,3 @@
 # HCA
 Hierarchical Cell Annotation
-![图片](https://github.com/YangJAT/HCA/assets/70686083/a64657ae-b92e-4aa9-a870-51e5437484e2)
+![图片](https://github.com/YangJAT/HCA/assets/70686083/d8fb4993-175e-453f-bff6-45bcd8c91ef3)

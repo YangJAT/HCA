@@ -17,28 +17,28 @@
 anno_function <- function(data = data,
                           sig_thres = 0.2, min_cell = 50){
 
-  # 获得signature分数 ----------
+  # signature score----------
 
   sigscore <- data@meta.data
   sigscore <- sigscore[,str_detect(colnames(sigscore), "UCell")]
 
 
-  # 二分类函数 ----------
+  #Binary classification----------
 
   exp_dicho <- function(exp){
 
     exp <- as.matrix(exp)
 
-    # 开始循环
+    # loop
 
     dicho <- do.call(cbind, lapply(1:ncol(exp), function(q){
 
-      # 计算密度
+      # Calculate the density
 
       den <- density(exp[,q])
       den_diff <- diff(den$y, bw = 0.05)
 
-      # 确定阈值
+      # Determine thresholds
 
       thres <- which(den_diff[-1] * den_diff[-length(den_diff)] < 0) + 1
       thres <- den$x[thres[2]]
@@ -46,12 +46,12 @@ anno_function <- function(data = data,
       data.frame(ifelse(exp[,q] > thres, 1, 0))
     }))
 
-    # 整理结果
+    # result
 
     colnames(dicho) <- colnames(exp)
     dicho <- rownames_to_column(dicho, var = "id")
 
-    # 将NA设为0
+    # filter
 
     dicho[is.na(dicho)] <- 0
 
@@ -59,13 +59,13 @@ anno_function <- function(data = data,
   }
 
 
-  # 获得二分类矩阵 ----------
+  # Binary classification----------
 
   sigscore_dich <- exp_dicho(sigscore)
   sigscore_dich <- column_to_rownames(sigscore_dich, var = "id")
 
 
-  # 进行细胞类型注释 ----------
+  # Annotate the cells----------
 
   plan(multisession, workers = ncol(sigscore))
   options(future.globals.maxSize = 3000*1024^2)
@@ -85,25 +85,25 @@ anno_function <- function(data = data,
   plan(sequential)
 
 
-  # 排除100个以下的细胞类型 ----------
+  #filter ----------
 
   number <- data.frame(table(cellanno$type))
   cellname <- as.character(number[,1][number[,2] < min_cell])
   cellanno <- cellanno[!(cellanno$type %in% cellname),]
 
 
-  # 得到所有细胞 ----------
+  # Statistical results----------
 
   allcell <- data.frame(id = colnames(data))
   cellanno <- merge(cellanno, allcell, by = "id", all = T)
 
 
-  # 整理结果 ----------
+  # result ----------
 
   cellanno <- data.frame(id = cellanno$id, celltype_sig = cellanno$type)
   cellanno <- column_to_rownames(cellanno, var = "id")
 
-  # 输出结果 ----------
+  # output ----------
 
   data <- AddMetaData(data, cellanno)
   return(data)
@@ -128,29 +128,29 @@ anno_function <- function(data = data,
 anno_function2 <- function(data = data,
                            sig_thres = 0.2, min_cell = 50){
 
-  # 获得signature分数 ----------
+  # signature score-------
 
   sigscore <- data@meta.data
   sigscore <- sigscore[,str_detect(colnames(sigscore), "UCell")]
 
 
-  # 二分类函数 ----------
+  # Binary classification----------
 
   exp_dicho <- function(exp){
 
     exp <- as.matrix(exp)
 
-    # 开始循环
+    # loop
 
     dicho <- do.call(cbind, lapply(1:ncol(exp), function(q){
       data.frame(ifelse(exp[,q] > 0.15, 1, 0))}))
 
-    # 整理结果
+    # result
 
     colnames(dicho) <- colnames(exp)
     dicho <- rownames_to_column(dicho, var = "id")
 
-    # 将NA设为0
+    # filter
 
     dicho[is.na(dicho)] <- 0
 
@@ -158,13 +158,13 @@ anno_function2 <- function(data = data,
   }
 
 
-  # 获得二分类矩阵 ----------
+  # Binary classification ----------
 
   sigscore_dich <- exp_dicho(sigscore)
   sigscore_dich <- column_to_rownames(sigscore_dich, var = "id")
 
 
-  # 进行细胞类型注释 ----------
+  # annotate the cells ----------
 
   plan(multisession, workers = ncol(sigscore))
   options(future.globals.maxSize = 3000*1024^2)
@@ -184,25 +184,25 @@ anno_function2 <- function(data = data,
   plan(sequential)
 
 
-  # 排除100个以下的细胞类型 ----------
+  # filter ----------
 
   number <- data.frame(table(cellanno$type))
   cellname <- as.character(number[,1][number[,2] < min_cell])
   cellanno <- cellanno[!(cellanno$type %in% cellname),]
 
 
-  # 得到所有细胞 ----------
+  # result ----------
 
   allcell <- data.frame(id = colnames(data))
   cellanno <- merge(cellanno, allcell, by = "id", all = T)
 
 
-  # 整理结果 ----------
+  # Organize results  ----------
 
   cellanno <- data.frame(id = cellanno$id, celltype_sig = cellanno$type)
   cellanno <- column_to_rownames(cellanno, var = "id")
 
-  # 输出结果 ----------
+  # output ----------
 
   data <- AddMetaData(data, cellanno)
   return(data)
@@ -227,28 +227,26 @@ anno_function2 <- function(data = data,
 autoumap <- function(datafilt, nfeatures = 2000, ndim = 15,
                      neigh = 20, dist = 1){
 
-  # 测序深度标准化
+  #  NormalizeData
 
   datafilt <- NormalizeData(datafilt, scale.factor = 10000,
                             normalization.method = "LogNormalize")
 
-  # 寻找变异度高的基因
+  # Find Variable Features
 
   datafilt <- FindVariableFeatures(datafilt, nfeatures = nfeatures,
                                    selection.method = "vst")
 
-  # scale标准化
+  # scale
 
   datafilt <- ScaleData(datafilt, features = VariableFeatures(datafilt))
 
-  # PCA分析
+  # PCA
 
   datafilt <- RunPCA(datafilt, assay = 'RNA', slot = 'scale.data')
 
-  # 重新降维 ----------
-
-  # min.dist这个值对聚类形状影响很大 (大一点形状更好看)
-
+  # umap
+  
   datafilt <- RunUMAP(datafilt, dims = 1:ndim,
                       n.neighbors = neigh, min.dist = dist,
                       reduction = "pca", reduction.name = "umap")
@@ -275,26 +273,26 @@ autoumap <- function(datafilt, nfeatures = 2000, ndim = 15,
 autocluster <- function(datafilt, nfeatures = 1000, ndim = 15,
                         neigh = 20, dist = 0.5, res = 0.5){
 
-  # 测序深度标准化
+  # NormalizeData
 
   datafilt <- NormalizeData(datafilt, scale.factor = 10000,
                             normalization.method = "LogNormalize")
 
-  # 寻找变异度高的基因
+  # FindVariableFeatures
 
   datafilt <- FindVariableFeatures(datafilt, nfeatures = nfeatures,
                                    selection.method = "vst")
 
-  # scale标准化
+  # scale
 
   datafilt <- ScaleData(datafilt, features = VariableFeatures(datafilt))
 
-  # PCA分析
+  # PCA
 
   datafilt <- RunPCA(datafilt, assay = 'RNA', slot = 'scale.data')
 
 
-  # 细胞分群 ------------------------------
+  # cell cluster  ------------------------------
 
   datafilt <- FindNeighbors(datafilt, k.param = neigh,
                             dims = 1:ndim, reduction = "pca")
@@ -302,10 +300,7 @@ autocluster <- function(datafilt, nfeatures = 1000, ndim = 15,
   datafilt <- FindClusters(datafilt, resolution = res, n.iter = 50)
 
 
-  # 重新降维 ----------
-
-  # min.dist这个值对聚类形状影响很大 (大一点形状更好看)
-
+  # run umap
   datafilt <- RunUMAP(datafilt, dims = 1:ndim,
                       n.neighbors = neigh, min.dist = dist,
                       reduction = "pca", reduction.name = "umap")
@@ -314,7 +309,7 @@ autocluster <- function(datafilt, nfeatures = 1000, ndim = 15,
 }
 
 
-# 安装 MAGIC-KNN
+# Install MAGIC-KNN
 #install.packages("reticulate")
 #reticulate::install_miniconda() # if no conda env in your PC or server
 #reticulate::py_install("magic-impute") # this will install py packages: `magic` and `scprep`
@@ -341,18 +336,18 @@ MAGIC_impute<-function(datafilt, knn = 30, t = 3, npca = 50,
                        only_marker = TRUE,
                        ncore= 10){
 
-  # 填补
+  # impute
 
   magic_data<-magic(datafilt,knn = knn, t = t, npca = npca,
                     genes='all_genes',n.jobs=ncore)
 
-  # 进行进一步修正 ----------
+  # filter ----------
 
   if (only_marker == TRUE) {
 
     data.magic<-magic_data@assays$MAGIC_RNA$data
 
-    # 参考marker
+    # marker gene
 
     sel_gene <- c("CD2", "CD3E", "CD3D", "CD3G",
                   "KLRD1", "NKG7", "NCR1", "NCAM1",
@@ -368,11 +363,10 @@ MAGIC_impute<-function(datafilt, knn = 30, t = 3, npca = 50,
                   "SPP1", "APOE", "APOC1", "C1QC", "C1QA","C1QB",
                   "LYZ", "FCN1", "S100A8", "S100A9", "IL1B")
 
-    #过滤marker基因
     sel_gene<-unique(sel_gene)
     gene<-intersect(sel_gene,rownames(magic_data))
 
-    #替换原矩阵表达值
+    
     count<-magic_data@assays[['RNA']]$count
     count<-as.matrix(count)
 
@@ -409,25 +403,23 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
                    non_epi = non_epi, min_cell = 100,
                    ncore = 30){
 
-  # 初步划分CD45+与CD45-细胞 ----------
-
-  # 自定义模型
+  # Preliminary division of CD45+and CD45- cells ----------
 
   model <- scGate_DB$human$generic$CD8T
   model_CD45 <- model[model$levels == "level1",]
 
-  # 开始scGate计算
+  # Calculate ratings
 
   datafilt <- scGate(datafilt,
                      pos.thr = 0.30, neg.thr = 0.2,
                      ncores = ncore, model = model_CD45)
 
 
-  # 注释CD45+细胞 ==============================
+  # annotate cells ==============================
 
   datapos <- datafilt[,datafilt$is.pure == "Pure"]
 
-  # Tcells
+  # T cells
 
   Tcell <- c("CD2", "CD3E", "CD3D", "CD3G",
              "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-")
@@ -487,7 +479,7 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
                    MAST = MAST,
                    Neutrophil = Neutrophil)
 
-  # 计算signature分数
+  # calculate signature
 
   datapos@meta.data <- datapos@meta.data[,
                                          !(str_detect(colnames(datapos@meta.data), "UCell"))]
@@ -495,17 +487,15 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
   datapos <- AddModuleScore_UCell(datapos, chunk.size = 5000,
                                   ncores = ncore, features = genelist)
 
-  # 自动注释细胞
+  # annotate
 
   datapos <- anno_function(datapos, sig_thres = 0.15, min_cell = min_cell)
 
 
-  # 注释CD45-细胞 ==============================
-
   dataneg <- datafilt[,datafilt$is.pure == "Impure"]
 
 
-  # 进一步排除CD45-细胞中的CD45+细胞 ----------
+  # Further exclude CD45+cells from CD45- cells----------
 
   dataneg <- scGate(dataneg,
                     pos.thr = 0.2, neg.thr = 0.3,
@@ -533,12 +523,11 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
                    "FCER1A-", "CD207-", "CLEC9A-",
                    "FCGR3B-", "CEACAM8-", non_epi)
 
-  # 得到signature
 
   genelist <- list(Fibroblast = Fibroblast,
                    Endothelial = Endothelial)
 
-  # 计算signature分数
+  # calculate signature
 
   dataneg@meta.data <- dataneg@meta.data[,
                                          !(str_detect(colnames(dataneg@meta.data), "UCell"))]
@@ -546,25 +535,24 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
   dataneg <- AddModuleScore_UCell(dataneg, chunk.size = 5000,
                                   ncores = ncore, features = genelist)
 
-  # 自动注释细胞
+  # annotate cells
 
   dataneg <- anno_function2(dataneg, sig_thres = 0.3, min_cell = min_cell)
 
 
-  # 合并数据并进一步细分 ==============================
+  # integrate==============================
 
-  # 这一步会去掉被注释为NA的细胞
+  # filter cells
 
   datameta <- merge(datapos, dataneg)
   datameta <- datameta[,!is.na(datameta$celltype_sig)]
 
-  # 修改名字
 
   datameta$celltype_sig <- do.call(rbind,
                                    strsplit(datameta$celltype_sig, '_'))[,1]
 
 
-  # 进一步细分T细胞亚群 ==============================
+  # annotate T cells ==============================
 
   tcell <- datameta[,datameta$celltype_sig == "Tcell"]
 
@@ -585,13 +573,13 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
             "IL7R-", "CD8A-", "CD8B-",
             "GZMA-", "KLRB1-")
 
-  # 得到signature
+  # signature
 
   genelist <- list(CD8T = CD8T,
                    CD4T = CD4T,
                    Treg = Treg)
 
-  # 计算signature分数
+  # calculate signature
 
   tcell@meta.data <- tcell@meta.data[,
                                      !(str_detect(colnames(tcell@meta.data), "UCell"))]
@@ -599,12 +587,12 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
   tcell <- AddModuleScore_UCell(tcell, chunk.size = 5000,
                                 ncores = ncore, features = genelist)
 
-  # 自动注释细胞
+  # annotate cells
 
   tcell <- anno_function(tcell, sig_thres = 0.1, min_cell = min_cell)
 
 
-  # 进一步细分MoMac细胞 ==============================
+  # Further subdivision of MoMac cells ==============================
 
   momac <- datameta[,datameta$celltype_sig == "MoMac"]
 
@@ -618,12 +606,12 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
   Mono <- c("LYZ", "FCN1", "S100A8", "S100A9", "IL1B",
             "APOE-", "SPP1-", "C1QC-")
 
-  # 得到signature
+  # signature
 
   genelist <- list(Macro = Macro,
                    Mono = Mono)
 
-  # 计算signature分数
+  # calculate signature
 
   momac@meta.data <- momac@meta.data[,
                                      !(str_detect(colnames(momac@meta.data), "UCell"))]
@@ -631,18 +619,18 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
   momac <- AddModuleScore_UCell(momac, chunk.size = 5000,
                                 ncores = ncore, features = genelist)
 
-  # 自动注释细胞
+  # annotate
 
   momac <- anno_function(momac, sig_thres = 0.1, min_cell = min_cell)
 
 
-  # 整合细分注释 ==============================
+  # integrate cells ==============================
 
   anno_tcell <- data.frame(id = colnames(tcell), celltype_sig2 = tcell$celltype_sig)
   anno_momac <- data.frame(id = colnames(momac), celltype_sig2 = momac$celltype_sig)
   anno <- rbind(anno_tcell, anno_momac)
 
-  # 数据预处理
+  # preprocess
 
   anno <- na.omit(anno)
   rownames(anno) <- NULL
@@ -650,12 +638,11 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
   anno$celltype_sig2 <- do.call(rbind,
                                 strsplit(anno$celltype_sig2, '_'))[,1]
 
-  # 注释整合到Seurat对象
+  # integrate data
 
   anno <- column_to_rownames(anno, var = "id")
   datameta <- AddMetaData(datameta, anno)
 
-  # 整合celltype_sig与celltype_sig2
 
   cellname <- c("Bcell", "DC", "NKcell", "Fibroblast",
                 "Endothelial", "MAST", "Neutrophil")
@@ -689,61 +676,54 @@ tumor <- function(datafilt = datafilt,
 
   useGenome('hg38')
 
-  # scGate筛选CD45阳性/阴性细胞 ------------------------------
+  # ScGate screening for CD45 positive/negative cells------------------------------
 
   model <- scGate_DB$human$generic$CD8T
   model_CD45 <- model[model$levels == "level1",]
 
-
-  # 开始scGate计算
 
   datafilt <- scGate(datafilt,
                      pos.thr = 0.30, neg.thr = 0.05,
                      ncores = ncore, model = model_CD45)
 
 
-  # 准备进行inferCNA分析 ------------------------------
+  # Prepare for inferCNA analysis------------------------------
 
-  # 生成reference
+  # Generate reference
 
   normal <- datafilt[,datafilt$is.pure == "Pure"]
 
-  # 随机抽取部分细胞作为reference
 
   if (ncol(normal) > 1000) {
     ref <- normal[,sample(colnames(normal), 1000)]
   } else {ref <- normal}
   ref$celltype <- "normal"
 
-  # 得到reference cell的名字
 
   refname <- list(ref = colnames(ref))
 
 
-  # 生成inferCNA输入文件 ----------
+  # Generate inferCNA input file----------
 
-  # 重新进行scGate计算
 
   datafilt <- scGate(datafilt,
                      pos.thr = 0.2, neg.thr = 0.2,
                      ncores = ncore, model = model_CD45)
 
-  # 提取CD45-细胞
+  # Extract CD45- cells
 
   input <- datafilt[,datafilt$is.pure == "Impure"]
   input$celltype <- "candidate"
 
-  # 合并reference和candidate
-
   input <- merge(ref, input)
 
-  # 生成注释文件
+  # Generate annotation file
 
   info <- data.frame(id = colnames(input), type = input$celltype)
   info_p <- data.frame(id = colnames(input), sample = input$sample)
 
 
-  # 生成输入矩阵 (需要是log转换后标准化数据)
+  #Generate input matrix
 
   if (ncol(input) > 50000){
 
@@ -766,18 +746,16 @@ tumor <- function(datafilt = datafilt,
   }
 
 
-  # 开始inferCNA计算 ----------
-
-  # 参数n和noise对结果影响都很大 (具体选择方法看OneNote中案例)
+  # inferCNA ----------
 
   cna <- iCNA::infercna(m = input, refCells = refname, window = 150,
                         n = 5000, noise = 0.1, isLog = TRUE, verbose = FALSE)
 
-  # 计算cnaSignal
+  # calculate cnaSignal
 
   signal <- data.frame(signal = cnaSignal(cna, refCells = refname))
 
-  # 计算cnaCor
+  # calculate cnaCor
 
   cor <- do.call(rbind, lapply(unique(info_p$sample), function(i){
 
@@ -791,7 +769,7 @@ tumor <- function(datafilt = datafilt,
     data.frame(cor = correlation)
   }))
 
-  # 总结结果
+  # summary the result
 
   signal <- rownames_to_column(signal, var = "id")
   cor <- rownames_to_column(cor, var = "id")
@@ -800,7 +778,7 @@ tumor <- function(datafilt = datafilt,
   allscore <- merge(allscore, info, by = "id")
 
 
-  # 保存结果 ----------
+  # output ----------
 
   list(cna = cna,
        refname = refname,
@@ -830,7 +808,7 @@ plot_thres <- function(cnadata,
 
   allscore <- cnadata[["allscore"]]
 
-  # 设定颜色
+  # color
 
   col_rb <- c("#343391","#0064af","#0090cc",
               "#00b6db","#01b7c2","#53c0a3",
@@ -838,7 +816,6 @@ plot_thres <- function(cnadata,
               "#f6bd25","#f4a02e","#ed6f32",
               "#ea5c2e","#d5452f","#c02e2f","#8b2a21")
 
-  # 密度散点图可视化
 
   get_density <- function(x, y, ...) {
     dens <- MASS::kde2d(x, y, ...)
@@ -848,7 +825,7 @@ plot_thres <- function(cnadata,
     return(dens$z[ii])
   }
 
-  # 计算每个点密度
+  # Calculate the density of each point
 
   allscore <- do.call(rbind, lapply(unique(allscore$type), function(i){
     subdata <- allscore[allscore$type == i,]
@@ -857,7 +834,7 @@ plot_thres <- function(cnadata,
     subdata
   }))
 
-  # 开始画图
+  # plot
 
   plot <- ggplot(allscore, aes(signal, cor)) +
     geom_point(aes(color = dens), size = 1) +
@@ -906,38 +883,34 @@ anno_tumor <- function(datafilt = datafilt,
   cna <- cnadata[["cna"]]
 
 
-  # 提取肿瘤细胞 ----------
+  #Extracting tumor cells----------
 
   candidate <- allscore[allscore$type == "candidate",]
 
-  # 提取各类细胞
 
   cell_tumor <- candidate$id[candidate$signal > thres_sig & candidate$cor > thres_cor]
 
 
-  # 整合到Seurat对象 ----------
+  # Integrate ----------
 
   # 由于前面只抽取了1000个ref，这里要把其他未被抽取的细胞也标注为normal
 
   anno <- data.frame(id = cell_tumor, sample = "tumor")
   colnames(anno)[2] <- "tumor_cl"
 
-  # 整理注释信息
 
   rownames(anno) <- NULL
   anno <- column_to_rownames(anno, var = "id")
 
-  # 将注释信息整合到Seurat对象
 
   datafilt <- AddMetaData(datafilt, anno)
   datafilt <- datafilt[,!is.na(datafilt$tumor_cl)]
 
 
-  # 进行进一步筛选 ----------
+  # filter ----------
 
   if (isFilter == TRUE) {
 
-    # 筛选排除内皮细胞
 
     Endothelial <- c("PECAM1", "VWF", "ENG", "CDH5")
     Endothelial <- gating_model(name = "Endothelial", signature = Endothelial)
@@ -949,7 +922,6 @@ anno_tumor <- function(datafilt = datafilt,
     datafilt <- datafilt[,datafilt$is.pure == "Impure"]
 
 
-    # 筛选排除纤维细胞
 
     Fibroblast <- c("COL1A1", "COL1A2", "FAP", "PDPN", "DCN", "COL3A1", "COL6A1", "ACTA2")
     Fibroblast <- gating_model(name = "Fibroblast", signature = Fibroblast)
@@ -991,17 +963,16 @@ cna_heatmap <- function(cnadata = cnadata,
   cna <- cnadata[["cna"]]
 
 
-  # 提取肿瘤细胞
+  # Extracting tumor cells
 
   candidate <- allscore[allscore$type == "candidate",]
 
-  # 提取各类细胞
 
   cell_tumor <- candidate$id[candidate$signal > thres_sig & candidate$cor > thres_cor]
   cell_normal <- setdiff(candidate$id, cell_tumor)
   cell_ref <- unlist(refname)
 
-  # 得到各类细胞注释
+  #Obtain various cell annotations
 
   anno_tumor <- info_p[info_p$id %in% cell_tumor,]
   anno_tumor <- anno_tumor[order(anno_tumor$sample),] %>% list()
@@ -1009,29 +980,27 @@ cna_heatmap <- function(cnadata = cnadata,
   anno_normal <- data.frame(id = cell_normal, sample = "normal") %>% list()
   anno_ref <- data.frame(id = cell_ref, sample = "ref") %>% list()
 
-  # 总结注释
+  # summary
 
   anno <- do.call(rbind, c(anno_ref, anno_normal, anno_tumor))
   anno <- split(anno$id, anno$sample)
 
-  # 排除肿瘤细胞过少的样本
+  #filter
 
   number <- do.call(c, lapply(anno, function(i){length(i)}))
   select <- names(number)[number > 50]
 
-  # 得到最终注释及CNV矩阵
+  # output
 
   anno <- anno[select]
 
 
-  # 进行热图可视化 ----------
+  # plot ----------
 
   cna_ref <- cna[,cell_ref]
   cna_normal <- cna[,cell_normal]
   cna_tumor <- cna[,anno_tumor[[1]][["id"]]]
 
-
-  # 确保样本量不会过大
 
   if (length(cell_normal) < 5000) {
     cna_normal <- cna_normal
@@ -1042,21 +1011,21 @@ cna_heatmap <- function(cnadata = cnadata,
   } else {cna_tumor <- cna_tumor[,sort(sample(length(cell_tumor), max_cell))]}
 
 
-  # ref的热图
+  # heatmap
 
   plot <- cnaPlot(cna = cna_ref)
   plot <- plot$p
   ggsave("inferCNV/cna_ref.png", plot, dpi = 100,
          width = 15, height = 20, limitsize = FALSE)
 
-  # normal的热图
+  # normal
 
   plot <- cnaPlot(cna = cna_normal)
   plot <- plot$p
   ggsave("inferCNV/cna_normal.png", plot, dpi = 100,
          width = 15, height = 20, limitsize = FALSE)
 
-  # tumor的热图
+  # tumor
 
   plot <- cnaPlot(cna = cna_tumor)
   plot <- plot$p
@@ -1088,7 +1057,6 @@ auto_immune <- function(datafilt, scGate_DB = scGate_DB,
                         MAGIC_impute = FALSE,
                         ncore = 30){
 
-  ##检测数据大小判断是否切分
 
   if (ncol(datafilt)>100000){
 
@@ -1107,7 +1075,7 @@ auto_immune <- function(datafilt, scGate_DB = scGate_DB,
         data<-i
       }
 
-      # immune 注释
+      # immune annotate
 
       datameta<-immune(data, scGate_DB = scGate_DB,
                        non_epi = non_epi, min_cell = min_cell,
@@ -1117,7 +1085,7 @@ auto_immune <- function(datafilt, scGate_DB = scGate_DB,
 
     })
 
-    ##整合切分数据
+    ##integrate
 
     dataintg<-alldata[1]
 
@@ -1176,7 +1144,6 @@ infertumor <- function(datafilt = datafilt,
                        isFilter = FALSE,
                        ncore = 30){
 
-  ##检测数据大小判断是否切分
 
   if (ncol(datafilt)>100000){
 
@@ -1186,13 +1153,13 @@ infertumor <- function(datafilt = datafilt,
 
     alldata<-lapply(data_split, function(i){
 
-      ## tumor_cna推测
+      ## tumor_cna
 
       cnadata<-tumor(datafilt = i,
                      scGate_DB = scGate_DB,
                      ncore = ncore)
 
-      # 初步注释
+
 
       datacanc <- anno_tumor(datafilt = i, cnadata = cnadata,
                              thres_sig = thres_sig,
@@ -1204,7 +1171,7 @@ infertumor <- function(datafilt = datafilt,
 
     })
 
-    ##整合切分数据
+    ##integrate
 
     dataintg<-alldata[1]
 
@@ -1216,13 +1183,13 @@ infertumor <- function(datafilt = datafilt,
 
   } else {
 
-    ## tumor_cna推测
+    ## tumor_cna
 
     cnadata<-tumor(datafilt = datafilt,
                    scGate_DB = scGate_DB,
                    ncore = ncore)
 
-    # 初步注释
+    # annotate
 
     datacanc <- anno_tumor(datafilt, cnadata = cnadata,
                            thres_sig = thres_sig,
@@ -1262,19 +1229,18 @@ integrate <- function(dataimmu = dataimmu,
   datacanc <- datacanc[,!(colnames(datacanc) %in% select)]
   dataintg <- merge(dataimmu, datacanc)
 
-  # 整合Immune与Tumor注释
 
   dataintg$celltype_sig2[is.na(dataintg$celltype_sig2)] <- "tumor"
 
 
-  # 去除doublets
+  # filter doublets
 
   if (rm_doublet == TRUE){
 
     dataintg <- autocluster(dataintg, nfeatures = 2000, ndim = 15,
                             neigh = 20, dist = 0.5, res = 0.5)
 
-    # 寻找最优pK值
+    # seek  k numbers
 
     sweep.res.list <- paramSweep_v3(dataintg, PCs = 1:20)
     sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
@@ -1283,14 +1249,12 @@ integrate <- function(dataimmu = dataimmu,
     pK_bcmvn <- bcmvn$pK[which.max(bcmvn$BCmetric)] %>%
       as.character() %>% as.numeric()
 
-    # 排除不能检出的同源doublets，优化期望的doublets数量
 
     homotypic.prop <- modelHomotypic(dataintg$Seurat_clusters)
 
     nExp_poi <- round(prop_doublet*ncol(dataintg))
     nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
 
-    # 使用确定好的参数鉴定doublets
 
     dataintg <- doubletFinder_v3(dataintg, PCs = 1:20, pN = 0.25,
                                  pK = pK_bcmvn, reuse.pANN = F,
@@ -1303,19 +1267,19 @@ integrate <- function(dataimmu = dataimmu,
     infodata <- data.frame(id = rownames(dataintg@meta.data),
                            DFclass = dataintg@meta.data[["DF.classifications"]])
 
-    # 将结果整合到Seurat对象
+    # integrate date
 
     rownames(infodata) <- NULL
     infodata <- column_to_rownames(infodata, var = "id")
     dataintg <- AddMetaData(dataintg, infodata)
 
-    # 排除doublet
+    # exclude doublet
 
     dataintg <- dataintg[,dataintg$DFclass == "Singlet"]
   }
 
 
-  # 排除肿瘤细胞过少的样本
+  # filter tumor
 
   select <- data.frame(cell = colnames(dataintg),
                        id = dataintg$sample,
@@ -1330,7 +1294,7 @@ integrate <- function(dataimmu = dataimmu,
   select <- select$cell[select$id %in% number]
   dataintg <- dataintg[,!(colnames(dataintg) %in% select)]
 
-  # 重新标准化和降维
+  # umap
 
   dataintg <- autoumap(dataintg, nfeatures = 2000, ndim = 15,
                        neigh = 20, dist = 0.75, res = 0.5)

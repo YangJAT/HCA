@@ -322,6 +322,7 @@ autocluster <- function(datafilt, nfeatures = 1000, ndim = 15,
 #' @param t
 #' @param npca
 #' @param only_marker impute marker genes
+#' @param organism human or mouse
 #' @param ncore number of cores
 #'
 #' @return Seurat object
@@ -333,7 +334,7 @@ autocluster <- function(datafilt, nfeatures = 1000, ndim = 15,
 #' @examples
 #'
 MAGIC_impute<-function(datafilt, knn = 30, t = 3, npca = 50,
-                       only_marker = TRUE,
+                       only_marker = TRUE,organism = 'human',
                        ncore= 10){
 
   # impute
@@ -348,20 +349,35 @@ MAGIC_impute<-function(datafilt, knn = 30, t = 3, npca = 50,
     data.magic<-magic_data@assays$MAGIC_RNA$data
 
     # marker gene
-
-    sel_gene <- c("CD2", "CD3E", "CD3D", "CD3G",
-                  "KLRD1", "NKG7", "NCR1", "NCAM1",
-                  "CD79A",
-                  "CD68", "CD163", "CD14", "CSF1R", "LYZ", "C1QC", "FCN1",
-                  "FCER1A", "CD1C", "CLEC9A", "FLT3",
-                  "KIT", "MS4A2", "GATA2", "CPA3", "TPSB2",
-                  "FCGR3B", "CEACAM8", "CD177", "CSF3R", "ITGAM",
-                  "COL1A1", "COL1A2", "FAP", "PDPN", "DCN", "COL3A1", "COL6A1", "ACTA2",
-                  "VWF", "CLDN5",
-                  "CD8A", "CD8B",
-                  "CD4", "FOXP3", "IL2RA",
-                  "SPP1", "APOE", "APOC1", "C1QC", "C1QA","C1QB",
-                  "LYZ", "FCN1", "S100A8", "S100A9", "IL1B")
+    
+    if(organism == 'human') {
+      sel_gene <- c("CD2", "CD3E", "CD3D", "CD3G",
+                    "KLRD1", "NKG7", "NCR1", "NCAM1",
+                    "CD79A",
+                    "CD68", "CD163", "CD14", "CSF1R", "LYZ", "C1QC", "FCN1",
+                    "FCER1A", "CD1C", "CLEC9A", "FLT3",
+                    "KIT", "MS4A2", "GATA2", "CPA3", "TPSB2",
+                    "FCGR3B", "CEACAM8", "CD177", "CSF3R", "ITGAM",
+                    "COL1A1", "COL1A2", "FAP", "PDPN", "DCN", "COL3A1", "COL6A1", "ACTA2",
+                    "VWF", "CLDN5",
+                    "CD8A", "CD8B",
+                    "CD4", "FOXP3", "IL2RA",
+                    "SPP1", "APOE", "APOC1", "C1QC", "C1QA","C1QB",
+                    "LYZ", "FCN1", "S100A8", "S100A9", "IL1B")
+    }else{
+      sel_gene <- c("Cd2","Cd3d", "Cd3e","Cd3g",
+                        "Cd79a","Cd79b","Ly6d","Ms4a1",
+                        "C1qa", "C1qb", "Cd68","Csf1r","Lyz2","H2-Ab1", "H2-Eb1",
+                        "Klrd1", "Nkg7", "Ncr1",
+                        "Cd8a", "Cd8b1", "Cd4", "Foxp3",
+                        "Lyz2", "C1qc", "C1qa","C1qb",'Csf1r',
+                        "H2-Ab1", "H2-Eb1", "Itgax", "Clec9a","Cd209a",
+                        "Kit", "Cpa3", 'Il5',
+                        "S100a9", "S100a8",'Mmp9',"Retnlg",
+                        "Dcn", "Gsn", "Fn1", "Col3a1",'Col1a1','Pdgfra','Tcf21',
+                        "Fabp4", "Cdh5", 'Esam','Pecam1','Egfl7',
+                        'Tnni2','Acta1','Actn2','Tagln','Acta2',
+                        'Higd1b','Pdgfrb','Cspg4','Des','Ndufa4l2')}
 
     sel_gene<-unique(sel_gene)
     gene<-intersect(sel_gene,rownames(magic_data))
@@ -388,6 +404,7 @@ MAGIC_impute<-function(datafilt, knn = 30, t = 3, npca = 50,
 #' @param scGate_DB scGate gene list
 #' @param non_epi epi marker genes
 #' @param min_cell cell types contain a reasonable number of cells
+#' @param organism human or mouse
 #' @param ncore number of cores
 #'
 #' @return Seurat object with immune cell annotation
@@ -401,257 +418,496 @@ MAGIC_impute<-function(datafilt, knn = 30, t = 3, npca = 50,
 #'
 immune <- function(datafilt, scGate_DB = scGate_DB,
                    non_epi = non_epi, min_cell = 100,
+                   organism = 'human',
                    ncore = 30){
-
-  # Preliminary division of CD45+and CD45- cells ----------
-
-  model <- scGate_DB$human$generic$CD8T
-  model_CD45 <- model[model$levels == "level1",]
-
-  # Calculate ratings
-
-  datafilt <- scGate(datafilt,
-                     pos.thr = 0.30, neg.thr = 0.2,
-                     ncores = ncore, model = model_CD45)
-
-
-  # annotate cells ==============================
-
-  datapos <- datafilt[,datafilt$is.pure == "Pure"]
-
-  # T cells
-
-  Tcell <- c("CD2", "CD3E", "CD3D", "CD3G",
-             "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-")
-
-  # NK cells
-
-  NKcell <- c("KLRD1", "NKG7", "NCR1", "NCAM1",
-              "CD8A-", "CD8B-", "CD4-", "FOXP3-",
-              "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-")
-
-  # B cells
-
-  Bcell <- c("CD79A",
-             "CD3E-", "CD3D-", "CD8A-", "CD4-",
-             "CD68-", "CD163-", "CD14-", "FCGR3A-",
-             "FCER1A-", "CLEC9A-", "FLT3-",
-             "CEACAM8-", "FCGR3B-")
-
-  # Mono/Macro
-
-  MoMac <- c("CD68", "CD163", "CD14", "CSF1R", "LYZ",
-             "C1QC", "FCN1",
-             "CD2-", "CD3E-", "CD3D-", "CD3G-",
-             "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-",
-             "FCER1A-", "CLEC9A-", "FLT3-",
-             "FCGR3B-", "CEACAM8-")
-
-  # DCs
-
-  DC <- c("FCER1A", "CD1C", "CLEC9A", "FLT3",
-          "CD2-", "CD3E-", "CD3D-", "CD3G-",
-          "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-",
-          "CD68-", "CD163-", "CD14-", "FCGR3A-",
-          "FCGR3B-", "CEACAM8-")
-
-  # MAST
-
-  MAST <- c("KIT", "MS4A2", "GATA2", "CPA3", "TPSB2",
-            "CD3E-", "CD3D-", "CD8A-", "CD4-",
+  
+  if(organism == 'human') {
+    
+    # Preliminary division of CD45+and CD45- cells ----------
+    
+    model <- scGate_DB$human$generic$CD8T
+    model_CD45 <- model[model$levels == "level1",]
+    
+    # Calculate ratings
+    
+    datafilt <- scGate(datafilt,
+                       pos.thr = 0.30, neg.thr = 0.2,
+                       ncores = ncore, model = model_CD45)
+    
+    
+    # annotate cells ==============================
+    
+    datapos <- datafilt[,datafilt$is.pure == "Pure"]
+    
+    # T cells
+    
+    Tcell <- c("CD2", "CD3E", "CD3D", "CD3G",
+               "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-")
+    
+    # NK cells
+    
+    NKcell <- c("KLRD1", "NKG7", "NCR1", "NCAM1",
+                "CD8A-", "CD8B-", "CD4-", "FOXP3-",
+                "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-")
+    
+    # B cells
+    
+    Bcell <- c("CD79A",
+               "CD3E-", "CD3D-", "CD8A-", "CD4-",
+               "CD68-", "CD163-", "CD14-", "FCGR3A-",
+               "FCER1A-", "CLEC9A-", "FLT3-",
+               "CEACAM8-", "FCGR3B-")
+    
+    # Mono/Macro
+    
+    MoMac <- c("CD68", "CD163", "CD14", "CSF1R", "LYZ",
+               "C1QC", "FCN1",
+               "CD2-", "CD3E-", "CD3D-", "CD3G-",
+               "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-",
+               "FCER1A-", "CLEC9A-", "FLT3-",
+               "FCGR3B-", "CEACAM8-")
+    
+    # DCs
+    
+    DC <- c("FCER1A", "CD1C", "CLEC9A", "FLT3",
+            "CD2-", "CD3E-", "CD3D-", "CD3G-",
             "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-",
+            "CD68-", "CD163-", "CD14-", "FCGR3A-",
             "FCGR3B-", "CEACAM8-")
-
-  # Neutrophils
-
-  Neutrophil <- c("FCGR3B", "CEACAM8", "CD177", "CSF3R", "ITGAM",
-                  "CD3E-", "CD3D-", "CD8A-", "CD4-",
-                  "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-",
-                  "CD14-", "CD163-")
-
-  # 得到signature
-
-  genelist <- list(Tcell = Tcell,
-                   NKcell = NKcell,
-                   Bcell = Bcell,
-                   MoMac = MoMac,
-                   DC = DC,
-                   MAST = MAST,
-                   Neutrophil = Neutrophil)
-
-  # calculate signature
-
-  datapos@meta.data <- datapos@meta.data[,
-                                         !(str_detect(colnames(datapos@meta.data), "UCell"))]
-
-  datapos <- AddModuleScore_UCell(datapos, chunk.size = 5000,
+    
+    # MAST
+    
+    MAST <- c("KIT", "MS4A2", "GATA2", "CPA3", "TPSB2",
+              "CD3E-", "CD3D-", "CD8A-", "CD4-",
+              "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-",
+              "FCGR3B-", "CEACAM8-")
+    
+    # Neutrophils
+    
+    Neutrophil <- c("FCGR3B", "CEACAM8", "CD177", "CSF3R", "ITGAM",
+                    "CD3E-", "CD3D-", "CD8A-", "CD4-",
+                    "CD19-", "CD79A-", "MS4A1-", "TNFRSF17-",
+                    "CD14-", "CD163-")
+    
+    # 得到signature
+    
+    genelist <- list(Tcell = Tcell,
+                     NKcell = NKcell,
+                     Bcell = Bcell,
+                     MoMac = MoMac,
+                     DC = DC,
+                     MAST = MAST,
+                     Neutrophil = Neutrophil)
+    
+    # calculate signature
+    
+    datapos@meta.data <- datapos@meta.data[,
+                                           !(str_detect(colnames(datapos@meta.data), "UCell"))]
+    
+    datapos <- AddModuleScore_UCell(datapos, chunk.size = 5000,
+                                    ncores = ncore, features = genelist)
+    
+    # annotate
+    
+    datapos <- anno_function(datapos, sig_thres = 0.15, min_cell = min_cell)
+    
+    
+    dataneg <- datafilt[,datafilt$is.pure == "Impure"]
+    
+    
+    # Further exclude CD45+cells from CD45- cells----------
+    
+    dataneg <- scGate(dataneg,
+                      pos.thr = 0.2, neg.thr = 0.3,
+                      ncores = ncore, model = model_CD45)
+    
+    dataneg <- dataneg[,dataneg$is.pure == "Impure"]
+    
+    
+    # Fibroblasts
+    
+    Fibroblast <- c("COL1A1", "COL1A2", "FAP", "PDPN", "DCN",
+                    "COL3A1", "COL6A1", "ACTA2",
+                    "CD3E-", "CD3D-", "CD8A-", "CD4-",
+                    "CD19-", "CD79A-", "MS4A1-", "IGKC-", "IGLC2-",
+                    "CD68-", "CD163-", "CD14-", "FCGR3A-",
+                    "FCER1A-", "CD207-", "CLEC9A-",
+                    "FCGR3B-", "CEACAM8-", non_epi)
+    
+    # Endothelial cells
+    
+    Endothelial <- c("VWF", "CLDN5",
+                     "CD3E-", "CD3D-", "CD8A-", "CD4-",
+                     "CD19-", "CD79A-", "MS4A1-", "IGKC-", "IGLC2-",
+                     "CD68-", "CD163-", "CD14-", "FCGR3A-",
+                     "FCER1A-", "CD207-", "CLEC9A-",
+                     "FCGR3B-", "CEACAM8-", non_epi)
+    
+    
+    genelist <- list(Fibroblast = Fibroblast,
+                     Endothelial = Endothelial)
+    
+    # calculate signature
+    
+    dataneg@meta.data <- dataneg@meta.data[,
+                                           !(str_detect(colnames(dataneg@meta.data), "UCell"))]
+    
+    dataneg <- AddModuleScore_UCell(dataneg, chunk.size = 5000,
+                                    ncores = ncore, features = genelist)
+    
+    # annotate cells
+    
+    dataneg <- anno_function2(dataneg, sig_thres = 0.3, min_cell = min_cell)
+    
+    
+    # integrate==============================
+    
+    # filter cells
+    
+    datameta <- merge(datapos, dataneg)
+    datameta <- datameta[,!is.na(datameta$celltype_sig)]
+    
+    
+    datameta$celltype_sig <- do.call(rbind,
+                                     strsplit(datameta$celltype_sig, '_'))[,1]
+    
+    
+    # annotate T cells ==============================
+    
+    tcell <- datameta[,datameta$celltype_sig == "Tcell"]
+    
+    # CD8 Tcell
+    
+    CD8T <- c("CD8A", "CD8B",
+              "CD4-", "FOXP3-", "IL2RA-", "CD40LG-")
+    
+    # CD4 Tcell
+    
+    CD4T <- c("CD4",
+              "CD8A-", "CD8B-", "GZMA-", "KLRB1-",
+              "FOXP3-", "IL2RA-", "TNFRSF4-", "TNFRSF18-")
+    
+    # Treg
+    
+    Treg <- c("CD4", "FOXP3", "IL2RA",
+              "IL7R-", "CD8A-", "CD8B-",
+              "GZMA-", "KLRB1-")
+    
+    # signature
+    
+    genelist <- list(CD8T = CD8T,
+                     CD4T = CD4T,
+                     Treg = Treg)
+    
+    # calculate signature
+    
+    tcell@meta.data <- tcell@meta.data[,
+                                       !(str_detect(colnames(tcell@meta.data), "UCell"))]
+    
+    tcell <- AddModuleScore_UCell(tcell, chunk.size = 5000,
                                   ncores = ncore, features = genelist)
-
-  # annotate
-
-  datapos <- anno_function(datapos, sig_thres = 0.15, min_cell = min_cell)
-
-
-  dataneg <- datafilt[,datafilt$is.pure == "Impure"]
-
-
-  # Further exclude CD45+cells from CD45- cells----------
-
-  dataneg <- scGate(dataneg,
-                    pos.thr = 0.2, neg.thr = 0.3,
-                    ncores = ncore, model = model_CD45)
-
-  dataneg <- dataneg[,dataneg$is.pure == "Impure"]
-
-
-  # Fibroblasts
-
-  Fibroblast <- c("COL1A1", "COL1A2", "FAP", "PDPN", "DCN",
-                  "COL3A1", "COL6A1", "ACTA2",
-                  "CD3E-", "CD3D-", "CD8A-", "CD4-",
-                  "CD19-", "CD79A-", "MS4A1-", "IGKC-", "IGLC2-",
-                  "CD68-", "CD163-", "CD14-", "FCGR3A-",
-                  "FCER1A-", "CD207-", "CLEC9A-",
-                  "FCGR3B-", "CEACAM8-", non_epi)
-
-  # Endothelial cells
-
-  Endothelial <- c("VWF", "CLDN5",
-                   "CD3E-", "CD3D-", "CD8A-", "CD4-",
-                   "CD19-", "CD79A-", "MS4A1-", "IGKC-", "IGLC2-",
-                   "CD68-", "CD163-", "CD14-", "FCGR3A-",
-                   "FCER1A-", "CD207-", "CLEC9A-",
-                   "FCGR3B-", "CEACAM8-", non_epi)
-
-
-  genelist <- list(Fibroblast = Fibroblast,
-                   Endothelial = Endothelial)
-
-  # calculate signature
-
-  dataneg@meta.data <- dataneg@meta.data[,
-                                         !(str_detect(colnames(dataneg@meta.data), "UCell"))]
-
-  dataneg <- AddModuleScore_UCell(dataneg, chunk.size = 5000,
+    
+    # annotate cells
+    
+    tcell <- anno_function(tcell, sig_thres = 0.1, min_cell = min_cell)
+    
+    
+    # Further subdivision of MoMac cells ==============================
+    
+    momac <- datameta[,datameta$celltype_sig == "MoMac"]
+    
+    # Macrophage
+    
+    Macro <- c("SPP1", "APOE", "APOC1", "C1QC", "C1QA","C1QB",
+               "S100A8-", "FCN1-")
+    
+    # Monocyte
+    
+    Mono <- c("LYZ", "FCN1", "S100A8", "S100A9", "IL1B",
+              "APOE-", "SPP1-", "C1QC-")
+    
+    # signature
+    
+    genelist <- list(Macro = Macro,
+                     Mono = Mono)
+    
+    # calculate signature
+    
+    momac@meta.data <- momac@meta.data[,
+                                       !(str_detect(colnames(momac@meta.data), "UCell"))]
+    
+    momac <- AddModuleScore_UCell(momac, chunk.size = 5000,
                                   ncores = ncore, features = genelist)
-
-  # annotate cells
-
-  dataneg <- anno_function2(dataneg, sig_thres = 0.3, min_cell = min_cell)
-
-
-  # integrate==============================
-
-  # filter cells
-
-  datameta <- merge(datapos, dataneg)
-  datameta <- datameta[,!is.na(datameta$celltype_sig)]
-
-
-  datameta$celltype_sig <- do.call(rbind,
-                                   strsplit(datameta$celltype_sig, '_'))[,1]
-
-
-  # annotate T cells ==============================
-
-  tcell <- datameta[,datameta$celltype_sig == "Tcell"]
-
-  # CD8 Tcell
-
-  CD8T <- c("CD8A", "CD8B",
-            "CD4-", "FOXP3-", "IL2RA-", "CD40LG-")
-
-  # CD4 Tcell
-
-  CD4T <- c("CD4",
-            "CD8A-", "CD8B-", "GZMA-", "KLRB1-",
-            "FOXP3-", "IL2RA-", "TNFRSF4-", "TNFRSF18-")
-
-  # Treg
-
-  Treg <- c("CD4", "FOXP3", "IL2RA",
-            "IL7R-", "CD8A-", "CD8B-",
-            "GZMA-", "KLRB1-")
-
-  # signature
-
-  genelist <- list(CD8T = CD8T,
-                   CD4T = CD4T,
-                   Treg = Treg)
-
-  # calculate signature
-
-  tcell@meta.data <- tcell@meta.data[,
-                                     !(str_detect(colnames(tcell@meta.data), "UCell"))]
-
-  tcell <- AddModuleScore_UCell(tcell, chunk.size = 5000,
-                                ncores = ncore, features = genelist)
-
-  # annotate cells
-
-  tcell <- anno_function(tcell, sig_thres = 0.1, min_cell = min_cell)
-
-
-  # Further subdivision of MoMac cells ==============================
-
-  momac <- datameta[,datameta$celltype_sig == "MoMac"]
-
-  # Macrophage
-
-  Macro <- c("SPP1", "APOE", "APOC1", "C1QC", "C1QA","C1QB",
-             "S100A8-", "FCN1-")
-
-  # Monocyte
-
-  Mono <- c("LYZ", "FCN1", "S100A8", "S100A9", "IL1B",
-            "APOE-", "SPP1-", "C1QC-")
-
-  # signature
-
-  genelist <- list(Macro = Macro,
-                   Mono = Mono)
-
-  # calculate signature
-
-  momac@meta.data <- momac@meta.data[,
-                                     !(str_detect(colnames(momac@meta.data), "UCell"))]
-
-  momac <- AddModuleScore_UCell(momac, chunk.size = 5000,
-                                ncores = ncore, features = genelist)
-
-  # annotate
-
-  momac <- anno_function(momac, sig_thres = 0.1, min_cell = min_cell)
-
-
-  # integrate cells ==============================
-
-  anno_tcell <- data.frame(id = colnames(tcell), celltype_sig2 = tcell$celltype_sig)
-  anno_momac <- data.frame(id = colnames(momac), celltype_sig2 = momac$celltype_sig)
-  anno <- rbind(anno_tcell, anno_momac)
-
-  # preprocess
-
-  anno <- na.omit(anno)
-  rownames(anno) <- NULL
-
-  anno$celltype_sig2 <- do.call(rbind,
-                                strsplit(anno$celltype_sig2, '_'))[,1]
-
-  # integrate data
-
-  anno <- column_to_rownames(anno, var = "id")
-  datameta <- AddMetaData(datameta, anno)
-
-
-  cellname <- c("Bcell", "DC", "NKcell", "Fibroblast",
-                "Endothelial", "MAST", "Neutrophil")
-
-  select <- datameta$celltype_sig %in% cellname
-  datameta$celltype_sig2[select] <- datameta$celltype_sig[select]
-  datameta <- datameta[,!is.na(datameta$celltype_sig2)]
-
-  return(datameta)
+    
+    # annotate
+    
+    momac <- anno_function(momac, sig_thres = 0.1, min_cell = min_cell)
+    
+    
+    # integrate cells ==============================
+    
+    anno_tcell <- data.frame(id = colnames(tcell), celltype_sig2 = tcell$celltype_sig)
+    anno_momac <- data.frame(id = colnames(momac), celltype_sig2 = momac$celltype_sig)
+    anno <- rbind(anno_tcell, anno_momac)
+    
+    # preprocess
+    
+    anno <- na.omit(anno)
+    rownames(anno) <- NULL
+    
+    anno$celltype_sig2 <- do.call(rbind,
+                                  strsplit(anno$celltype_sig2, '_'))[,1]
+    
+    # integrate data
+    
+    anno <- column_to_rownames(anno, var = "id")
+    datameta <- AddMetaData(datameta, anno)
+    
+    
+    cellname <- c("Bcell", "DC", "NKcell", "Fibroblast",
+                  "Endothelial", "MAST", "Neutrophil")
+    
+    select <- datameta$celltype_sig %in% cellname
+    datameta$celltype_sig2[select] <- datameta$celltype_sig[select]
+    datameta <- datameta[,!is.na(datameta$celltype_sig2)]
+    
+    return(datameta)
+    
+  }else{
+    
+    # Preliminary division of CD45+and CD45- cells ----------
+    
+    model <- scGate_DB$mouse$generic$CD8T
+    model_CD45 <- model[model$levels == "level1",]
+    
+    # Calculate ratings
+    
+    datafilt <- scGate(datafilt,
+                       pos.thr = 0.30, neg.thr = 0.2,
+                       ncores = ncore, model = model_CD45)
+    
+    
+    # annotate cells ==============================
+    
+    datapos <- datafilt[,datafilt$is.pure == "Pure"]
+    
+    # Tcells
+    
+    Tcell <- c("Cd2","Cd3d", "Cd3e","Cd3g",
+               "Cd79a-","Cd79b-",'Ly6d-','Ms4a1-',
+               "C1qa-", "C1qb-", "Cd68-","Csf1r-","Lyz2-","H2-Ab1-", "H2-Eb1-")
+    # NK cells
+    
+    NKcell <- c("Klrd1", "Nkg7", "Ncr1",
+                "Cd8a-", "Cd8b1-", "Cd4-", "Foxp3-",
+                "Cd79a-","Cd79b-",'Ly6d-','Ms4a1-',
+                "C1qa-", "C1qb-", "Cd68-","Csf1r-","Lyz2-","H2-Ab1-", "H2-Eb1-")
+    
+    # B cells
+    
+    Bcell <- c("Cd79a","Cd79b",
+               "Cd2-","Cd3d-", "Cd3e-","Cd3g-",
+               "C1qa-", "C1qb-", "Cd68-","Csf1r-","Lyz2-","H2-Ab1-", "H2-Eb1-",
+               "S100a9-", "S100a8-")
+    
+    # Monocyte/Macrophage
+    
+    MoMac <- c("Lyz2", "C1qc", "C1qa","C1qb",'Csf1r',
+               "S100a9-", "S100a8-","Retnlg-", "Mmp9-",
+               "Itgax-", "Clec9a-","Cd209a-","H2-Ab1-",
+               "Cd2-","Cd3d-", "Cd3e-","Cd3g-",
+               "Cd79a-","Cd79b-",'Ly6d-','Ms4a1-')
+    # DCs
+    
+    DC <- c("H2-Ab1", "H2-Eb1", "Itgax", "Clec9a","Cd209a",
+            "Cd2-","Cd3d-", "Cd3e-","Cd3g-",
+            "Cd79a-","Cd79b-",'Ly6d-','Ms4a1-',
+            "Lyz2-", "C1qc-", "C1qa-","C1qb-",'Csf1r-',
+            "S100a9-", "S100a8-")
+    
+    # MAST
+    
+    MAST <- c("Kit", "Cpa3", 'Il5',
+              "Cd2-","Cd3d-", "Cd3e-","Cd3g-",
+              "Cd79a-","Cd79b-",'Ly6d-','Ms4a1-',
+              "S100a9-", "S100a8-")
+    
+    # Neutrophils
+    
+    Neutrophil <- c("S100a9", "S100a8",'Mmp9',"Retnlg",
+                    "Cd2-","Cd3d-", "Cd3e-","Cd3g-",
+                    "Cd79a-","Cd79b-",'Ly6d-','Ms4a1-',
+                    "Lyz2-", "C1qc-", "C1qa-","C1qb-",'Csf1r-')
+    
+    # signature
+    
+    genelist <- list(Tcell = Tcell,
+                     NKcell = NKcell,
+                     Bcell = Bcell,
+                     MoMac = MoMac,
+                     DC = DC,
+                     MAST = MAST,
+                     Neutrophil = Neutrophil)
+    
+    # calculate signature
+    
+    datapos@meta.data <- datapos@meta.data[,
+                                           !(str_detect(colnames(datapos@meta.data), "UCell"))]
+    
+    datapos <- AddModuleScore_UCell(datapos, chunk.size = 5000,
+                                    ncores = ncore, features = genelist)
+    
+    # annotate
+    
+    datapos <- anno_function(datapos, sig_thres = 0.15, min_cell = min_cell)
+    
+    
+    dataneg <- datafilt[,datafilt$is.pure == "Impure"]
+    
+    
+    # Further exclude CD45+cells from CD45- cells----------
+    
+    dataneg <- scGate(dataneg,
+                      pos.thr = 0.2, neg.thr = 0.3,
+                      ncores = ncore, model = model_CD45)
+    
+    dataneg <- dataneg[,dataneg$is.pure == "Impure"]
+    
+    
+    # Fibroblasts
+    
+    Fibroblast <- c("Dcn", "Gsn", "Fn1", "Col3a1",'Col1a1','Pdgfra','Tcf21',
+                    "Fabp4-", "Cdh5-", 'Esam-','Pecam1-','Egfl7-',
+                    'Tnni2-','Acta1-','Actn2-','Acta2-','Tagln-',
+                    'Higd1b-','Pdgfrb-','Cspg4-','Des-','Ndufa4l2-',
+                    'Hba-a1-','Hba-a2-',
+                    non_epi)
+    
+    # Endothelial cells
+    
+    Endothelial <- c("Fabp4", "Cdh5", 'Esam','Pecam1','Egfl7',
+                     "Dcn-", "Gsn-", "Fn1-", "Col3a1-",'Col1a1-','Pdgfra-','Tcf21-',
+                     'Tnni2-','Acta1-','Actn2-','Acta2-','Tagln-',
+                     'Higd1b-','Pdgfrb-','Cspg4-','Des-','Ndufa4l2-',
+                     'Hba-a1-','Hba-a2-',
+                     non_epi)
+    #Myocyte
+    
+    Myocyte <- c('Tnni2','Acta1','Actn2','Tagln','Acta2',
+                 "Dcn-", "Gsn-", "Fn1-", "Col3a1-",'Col1a1-','Pdgfra-','Tcf21-',
+                 "Fabp4-", "Cdh5-", 'Esam-','Pecam1-','Egfl7-',
+                 'Higd1b-','Pdgfrb-','Cspg4-','Des-','Ndufa4l2-',
+                 'Hba-a1-','Hba-a2-',
+                 non_epi)
+    
+    #Pericyte
+    
+    Pericyte <-c('Higd1b','Pdgfrb','Cspg4','Des','Ndufa4l2',
+                 "Dcn-", "Gsn-", "Fn1-", "Col3a1-",'Col1a1-','Pdgfra-','Tcf21-',
+                 "Fabp4-", "Cdh5-", 'Esam-','Pecam1-','Egfl7-',
+                 'Tnni2-','Acta1-','Actn2-','Tagln-','Acta2-',
+                 'Hba-a1-','Hba-a2-',
+                 non_epi)
+    
+    # signature
+    
+    genelist <- list(Fibroblast = Fibroblast,
+                     Endothelial = Endothelial,
+                     Myocyte=Myocyte,
+                     Pericyte =Pericyte)
+    
+    # calculate signature
+    
+    dataneg@meta.data <- dataneg@meta.data[,
+                                           !(str_detect(colnames(dataneg@meta.data), "UCell"))]
+    
+    dataneg <- AddModuleScore_UCell(dataneg, chunk.size = 5000,
+                                    ncores = ncore, features = genelist)
+    
+    # annotate cells
+    
+    dataneg <- anno_function2(dataneg, sig_thres = 0.3, min_cell = min_cell)
+    
+    
+    # integrate==============================
+    
+    # filter cells
+    
+    datameta <- merge(datapos, dataneg)
+    datameta <- datameta[,!is.na(datameta$celltype_sig)]
+    
+    
+    datameta$celltype_sig <- do.call(rbind,
+                                     strsplit(datameta$celltype_sig, '_'))[,1]
+    
+    
+    # annotate T cells ==============================
+    
+    tcell <- datameta[,datameta$celltype_sig == "Tcell"]
+    
+    # CD8 Tcell
+    
+    CD8T <- c("Cd8a","Cd8b1", "Klrb1a","Klrb1b",
+              "Cd4-", "Foxp3-", "Il2ra-", 'Ikzf2-')
+    
+    # CD4 Tcell
+    
+    CD4T <- c("Cd4",
+              "Cd8a-","Cd8b1-", "Klrb1a-","Klrb1b-",
+              "Foxp3-", "Il2ra-", 'Ikzf2-')
+    
+    # Treg
+    
+    Treg <- c("Cd4", "Foxp3", "Il2ra",'Ikzf2',
+              "Cd8a-","Cd8b1-", "Klrb1a-","Klrb1b-",
+              "Gzma-")
+    
+    # signature
+    
+    genelist <- list(CD8T = CD8T,
+                     CD4T = CD4T,
+                     Treg = Treg)
+    
+    # calculate signature
+    
+    tcell@meta.data <- tcell@meta.data[,
+                                       !(str_detect(colnames(tcell@meta.data), "UCell"))]
+    
+    tcell <- AddModuleScore_UCell(tcell, chunk.size = 5000,
+                                  ncores = ncore, features = genelist)
+    
+    # annotate cells
+    
+    tcell <- anno_function(tcell, sig_thres = 0.1, min_cell = min_cell)
+    
+    # integrate cells ==============================
+    
+    anno <- data.frame(id = colnames(tcell), celltype_sig2 = tcell$celltype_sig)
+    
+    # preprocess
+    
+    anno <- na.omit(anno)
+    rownames(anno) <- NULL
+    
+    anno$celltype_sig2 <- do.call(rbind,
+                                  strsplit(anno$celltype_sig2, '_'))[,1]
+    
+    # integrate data
+    
+    anno <- column_to_rownames(anno, var = "id")
+    datameta <- AddMetaData(datameta, anno)
+    
+    
+    cellname <- c("Bcell", "DC", "NKcell", "Fibroblast","MoMac",
+                  "Endothelial", "MAST", "Neutrophil", "Myocyte", "Pericyte")
+    
+    select <- datameta$celltype_sig %in% cellname
+    datameta$celltype_sig2[select] <- datameta$celltype_sig[select]
+    datameta <- datameta[,!is.na(datameta$celltype_sig2)]
+    
+    return(datameta)
+    
+  }
 }
 
 
@@ -659,6 +915,7 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
 #'
 #' @param datafilt your Seurat object(support V4)
 #' @param scGate_DB scGate gene list
+#' @param organism human or mouse
 #' @param ncore numbers of cores
 #'
 #' @return Seurat object
@@ -672,15 +929,28 @@ immune <- function(datafilt, scGate_DB = scGate_DB,
 #' @examples
 tumor <- function(datafilt = datafilt,
                   scGate_DB = scGate_DB,
+                  organism = 'human',
                   ncore = 30){
 
-  useGenome('hg38')
-
-  # ScGate screening for CD45 positive/negative cells------------------------------
-
-  model <- scGate_DB$human$generic$CD8T
-  model_CD45 <- model[model$levels == "level1",]
-
+  if(organism == 'human') {
+    
+    useGenome('hg38')
+    
+    # ScGate screening for CD45 positive/negative cells------------------------------
+    
+    model <- scGate_DB$human$generic$CD8T
+    model_CD45 <- model[model$levels == "level1",]
+    
+    }else{
+      
+      useGenome('mm10')
+      
+    # ScGate screening for CD45 positive/negative cells-----------------------------
+      
+      model <- scGate_DB$mouse$generic$CD8T
+      model_CD45 <- model[model$levels == "level1",]
+  
+  }
 
   datafilt <- scGate(datafilt,
                      pos.thr = 0.30, neg.thr = 0.05,
@@ -859,6 +1129,7 @@ plot_thres <- function(cnadata,
 #' @param cnadata
 #' @param thres_sig
 #' @param thres_cor
+#' @param organism human or mouse
 #' @param ncore number of core
 #' @param isFilter filter Endothelial/Stomal cells
 #'
@@ -873,6 +1144,7 @@ anno_tumor <- function(datafilt = datafilt,
                        cnadata = cnadata,
                        thres_sig = 0.005,
                        thres_cor = 0.5,
+                       organism = 'human',
                        ncore = 30,
                        isFilter = FALSE){
 
@@ -906,34 +1178,65 @@ anno_tumor <- function(datafilt = datafilt,
   datafilt <- AddMetaData(datafilt, anno)
   datafilt <- datafilt[,!is.na(datafilt$tumor_cl)]
 
-
-  # filter ----------
-
-  if (isFilter == TRUE) {
-
-
-    Endothelial <- c("PECAM1", "VWF", "ENG", "CDH5")
-    Endothelial <- gating_model(name = "Endothelial", signature = Endothelial)
-
-    datafilt <- scGate(datafilt,
-                       pos.thr = 0.15, neg.thr = 0.2,
-                       ncores = ncore, model = Endothelial)
-
-    datafilt <- datafilt[,datafilt$is.pure == "Impure"]
-
-
-
-    Fibroblast <- c("COL1A1", "COL1A2", "FAP", "PDPN", "DCN", "COL3A1", "COL6A1", "ACTA2")
-    Fibroblast <- gating_model(name = "Fibroblast", signature = Fibroblast)
-
-    datafilt <- scGate(datafilt,
-                       pos.thr = 0.15, neg.thr = 0.2,
-                       ncores = ncore, model = Fibroblast)
-
-    datafilt <- datafilt[,datafilt$is.pure == "Impure"]
-
-  } else {
-    datafilt
+  if(organism == 'human') {
+    
+    # filter ----------
+    
+    if (isFilter == TRUE) {
+      
+      
+      Endothelial <- c("PECAM1", "VWF", "ENG", "CDH5")
+      Endothelial <- gating_model(name = "Endothelial", signature = Endothelial)
+      
+      datafilt <- scGate(datafilt,
+                         pos.thr = 0.15, neg.thr = 0.2,
+                         ncores = ncore, model = Endothelial)
+      
+      datafilt <- datafilt[,datafilt$is.pure == "Impure"]
+      
+      Fibroblast <- c("COL1A1", "COL1A2", "FAP", "PDPN", "DCN", "COL3A1", "COL6A1", "ACTA2")
+      Fibroblast <- gating_model(name = "Fibroblast", signature = Fibroblast)
+      
+      datafilt <- scGate(datafilt,
+                         pos.thr = 0.15, neg.thr = 0.2,
+                         ncores = ncore, model = Fibroblast)
+      
+      datafilt <- datafilt[,datafilt$is.pure == "Impure"]
+      
+    } else {
+      datafilt
+    }
+    
+  }else{
+    
+    # filter ----------
+    
+    if (isFilter == TRUE) {
+      
+      Endothelial <- c("Fabp4", "Cdh5", 'Esam','Pecam1','Egfl7')
+      Endothelial <- gating_model(name = "Endothelial", signature = Endothelial)
+      
+      datafilt <- scGate(datafilt,
+                         pos.thr = 0.15, neg.thr = 0.2,
+                         ncores = ncore, model = Endothelial)
+      
+      datafilt <- datafilt[,datafilt$is.pure == "Impure"]
+      
+      
+      # 筛选排除纤维细胞
+      
+      Fibroblast <- c("Dcn", "Gsn", "Fn1", "Col3a1",'Col1a1','Pdgfra','Tcf21')
+      Fibroblast <- gating_model(name = "Fibroblast", signature = Fibroblast)
+      
+      datafilt <- scGate(datafilt,
+                         pos.thr = 0.15, neg.thr = 0.2,
+                         ncores = ncore, model = Fibroblast)
+      
+      datafilt <- datafilt[,datafilt$is.pure == "Impure"]
+      
+    } else {
+      datafilt
+    }
   }
 }
 
@@ -1042,6 +1345,7 @@ cna_heatmap <- function(cnadata = cnadata,
 #' @param non_epi
 #' @param min_cell
 #' @param MAGIC_impute
+#' @param organism human or mouse
 #' @param ncore
 #'
 #' @return
@@ -1055,6 +1359,7 @@ cna_heatmap <- function(cnadata = cnadata,
 auto_immune <- function(datafilt, scGate_DB = scGate_DB,
                         non_epi = non_epi, min_cell = 100,
                         MAGIC_impute = FALSE,
+                        organism = 'human',
                         ncore = 30){
 
 
@@ -1079,6 +1384,7 @@ auto_immune <- function(datafilt, scGate_DB = scGate_DB,
 
       datameta<-immune(data, scGate_DB = scGate_DB,
                        non_epi = non_epi, min_cell = min_cell,
+                       organism = organism,
                        ncore = ncore)
 
       return(datameta)
@@ -1108,6 +1414,7 @@ auto_immune <- function(datafilt, scGate_DB = scGate_DB,
 
     datameta<-immune(datafilt, scGate_DB = scGate_DB,
                      non_epi = non_epi, min_cell = min_cell,
+                     organism = organism,
                      ncore = ncore)
 
     return(datameta)
@@ -1127,6 +1434,7 @@ auto_immune <- function(datafilt, scGate_DB = scGate_DB,
 #' @param scGate_DB
 #' @param thres_sig
 #' @param thres_cor
+#' @param organism human or mouse
 #' @param isFilter
 #' @param ncore
 #'
@@ -1141,6 +1449,7 @@ infertumor <- function(datafilt = datafilt,
                        scGate_DB = scGate_DB,
                        thres_sig = 0.005,
                        thres_cor = 0.5,
+                       organism = 'human',
                        isFilter = FALSE,
                        ncore = 30){
 
@@ -1157,6 +1466,7 @@ infertumor <- function(datafilt = datafilt,
 
       cnadata<-tumor(datafilt = i,
                      scGate_DB = scGate_DB,
+                     organism = organise,
                      ncore = ncore)
 
 
@@ -1164,6 +1474,7 @@ infertumor <- function(datafilt = datafilt,
       datacanc <- anno_tumor(datafilt = i, cnadata = cnadata,
                              thres_sig = thres_sig,
                              thres_cor = thres_cor,
+                             organism = organise,
                              ncore = ncore,
                              isFilter = TRUE)
 
@@ -1187,6 +1498,7 @@ infertumor <- function(datafilt = datafilt,
 
     cnadata<-tumor(datafilt = datafilt,
                    scGate_DB = scGate_DB,
+                   organism = organise,
                    ncore = ncore)
 
     # annotate
@@ -1194,6 +1506,7 @@ infertumor <- function(datafilt = datafilt,
     datacanc <- anno_tumor(datafilt, cnadata = cnadata,
                            thres_sig = thres_sig,
                            thres_cor = thres_cor,
+                           organism = organise,
                            ncore = ncore,
                            isFilter = TRUE)
     return(datacanc)

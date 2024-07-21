@@ -9,6 +9,7 @@ immune(
   scGate_DB = scGate_DB,
   non_epi = non_epi,
   min_cell = 100,
+  organism = "human",
   ncore = 30
 )
 }
@@ -20,6 +21,8 @@ immune(
 \item{non_epi}{epi marker genes}
 
 \item{min_cell}{cell types contain a reasonable number of cells}
+
+\item{organism}{human or mouse}
 
 \item{ncore}{number of cores}
 }

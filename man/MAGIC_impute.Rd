@@ -10,6 +10,7 @@ MAGIC_impute(
   t = 3,
   npca = 50,
   only_marker = TRUE,
+  organism = "human",
   ncore = 10
 )
 }
@@ -17,6 +18,8 @@ MAGIC_impute(
 \item{datafilt}{your Seurat object(support V4)}
 
 \item{only_marker}{impute marker genes}
+
+\item{organism}{human or mouse}
 
 \item{ncore}{number of cores}
 }

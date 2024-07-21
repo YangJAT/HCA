@@ -1,12 +1,11 @@
-Package: anno
+Package: HCA
 Type: Package
 Title: single-cell annotation tool
 Version: 0.1.0
 Author: Chen Yang, Zhicheng Liu
-Maintainer: The package maintainer <yourself@somewhere.net>
+Maintainer: Chen Yang, Zhicheng Liu <Liuzhcheng@163.com>
 Description: A tool for single-cell annotation.
 License: What license is it under?
 Encoding: UTF-8
+LazyData: true
 RoxygenNote: 7.2.3
-NeedsCompilation: no
-Packaged: 2024-01-05 09:56:48 UTC; Zz

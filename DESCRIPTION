@@ -5,7 +5,19 @@ Version: 0.1.0
 Author: Chen Yang, Zhicheng Liu
 Maintainer: Chen Yang, Zhicheng Liu <Liuzhcheng@163.com>
 Description: A tool for single-cell annotation.
-License: What license is it under?
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
+Imports:
+    DoubletFinder,
+    Matrix,
+    Rmagic,
+    Seurat,
+    UCell,
+    dplyr,
+    future.apply,
+    ggplot2,
+    iCNA,
+    scGate,
+    tibble

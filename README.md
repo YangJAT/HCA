@@ -22,7 +22,6 @@ library(iCNA)
 library(ggplot2)
 ```
 
-Loading Data
 Define the color vector and load the data:
 
 ```r
@@ -36,29 +35,28 @@ scGate_DB <- readRDS("scgate/auto_anno/scGate_DB.rds")
 datafilt <- readRDS("data/sc_datafilt.rds")
 ```
 
->
 ## Celltype annotation 
->##for human scRNA:
->
->non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")
->
->dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB,organism = 'human', non_epi = non_epi, min_cell = 100, ncore = 1)
->
->dataimmu<-autoumap(dataimmu)
->
->plot <- DimPlot(dataimmu, pt.size = 0.1, label = T, repel = T, cols = sample(mycol), 
->               raster = FALSE, label.size = 5, reduction = "umap", 
->                group.by = c("celltype_sig"))
->
->ggsave("result/umap_immu.png", plot, dpi = 300, width = 9, height = 7)
->
->datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 
->                       organism = 'human', 
->                      thres_sig = 0.005, 
->                     thres_cor = 0.5, 
->                    ncore = 10, 
->                     isFilter = TRUE)
->
+For Human Single-Cell RNA Data:
+```r
+non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")
+
+dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'human', non_epi = non_epi, min_cell = 100, ncore = 1)
+dataimmu <- autoumap(dataimmu)
+
+plot <- DimPlot(dataimmu, pt.size = 0.1, label = T, repel = T, cols = sample(mycol), 
+                raster = FALSE, label.size = 5, reduction = "umap", 
+                group.by = c("celltype_sig"))
+
+ggsave("result/umap_immu.png", plot, dpi = 300, width = 9, height = 7)
+
+datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 
+                       organism = 'human', 
+                       thres_sig = 0.005, 
+                       thres_cor = 0.5, 
+                       ncore = 10, 
+                       isFilter = TRUE)
+```
+
 >##for mouse scRNA:
 >
 >non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-")

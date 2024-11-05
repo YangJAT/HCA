@@ -55,28 +55,27 @@ This tutorial shows how to use HCA to identify cells with usual ‘gene set’ (
 >
 >dim(datafilt)
 
-## Immune annotation ==============================
-##for human scRNA:
-
-non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")
-
-dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB,organism = 'human',# human mouse
-                        non_epi = non_epi, min_cell = 100, ncore = 1)
-
-dataimmu<-autoumap(dataimmu)
-
-plot <- DimPlot(dataimmu, pt.size = 0.1, label = T, repel = T, cols = sample(mycol),
-                raster = FALSE, label.size = 5, reduction = "umap",
-                group.by = c("celltype_sig"))
-
-ggsave("result/umap_immu.png", plot, dpi = 300, width = 9, height = 7)
-
-datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
-                       organism = 'mouse',# human
-                       thres_sig = 0.005,
-                       thres_cor = 0.5,
-                       ncore = 1,
-                       isFilter = TRUE)
+## Immune annotation 
+>##for human scRNA:
+>
+>non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")
+>
+>dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB,organism = 'human', non_epi = non_epi, >min_cell = 100, ncore = 1)
+>
+>dataimmu<-autoumap(dataimmu)
+>
+>plot <- DimPlot(dataimmu, pt.size = 0.1, label = T, repel = T, cols = sample(mycol), \
+>                raster = FALSE, label.size = 5, reduction = "umap", \
+>                group.by = c("celltype_sig"))
+>
+>ggsave("result/umap_immu.png", plot, dpi = 300, width = 9, height = 7)
+>
+>datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, \
+>                       organism = 'human', \
+>                      thres_sig = 0.005, \
+>                     thres_cor = 0.5, \
+>                     ncore = 1, \
+>                     isFilter = TRUE)
 
 # Integration ==============================
 

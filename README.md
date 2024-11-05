@@ -57,49 +57,46 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
                        isFilter = TRUE)
 ```
 
->##for mouse scRNA:
->
->non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-")
->
->dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB,organism = 'mouse', non_epi = non_epi, min_cell = 100, ncore = 1)
->
->dataimmu<-autoumap(dataimmu)
->
->plot <- DimPlot(dataimmu, pt.size = 0.1, label = T, repel = T, cols = sample(mycol), 
->               raster = FALSE, label.size = 5, reduction = "umap", 
->                group.by = c("celltype_sig"))
->
->ggsave("result/umap_immu.png", plot, dpi = 300, width = 9, height = 7)
->
->datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 
->                       organism = 'mouse', 
->                      thres_sig = 0.005, 
->                     thres_cor = 0.5, 
->                    ncore = 10, 
->                     isFilter = TRUE)
+For Mouse Single-Cell RNA Data:
+```r
+non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-")
 
-# Integration
+dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'mouse', non_epi = non_epi, min_cell = 100, ncore = 1)
+dataimmu <- autoumap(dataimmu)
 
->dataintg <- integrate(dataimmu, datacanc)
->
->plot <- DimPlot(dataintg, pt.size = 0.1, label = T, repel = T, cols = sample(mycol),
->                raster = FALSE, label.size = 5, reduction = "umap",
->               group.by = c("sample"))
->
->ggsave("result/umap_intg.png", plot, dpi = 300, width = 9, height = 7)
->
->
->
->info<-dataintg@meta.data[c('celltype_sig','celltype_sig2')] \
->datafilt<-AddMetaData(datafilt,info) \
->datafilt<-autoumap(datafilt) \
->plot <- DimPlot(datafilt, pt.size = 0.1, label = T, repel = T, cols = sample(mycol),
->               raster = FALSE, label.size = 5, reduction = "umap",
->                group.by = c("celltype_sig2"))
->
->ggsave("result/umap_clusters.png", plot, dpi = 300, width = 9, height = 7)
->
->saveRDS(datafilt,'data/sc_datafilt_anno.rds')
+plot <- DimPlot(dataimmu, pt.size = 0.1, label = T, repel = T, cols = sample(mycol), 
+                raster = FALSE, label.size = 5, reduction = "umap", 
+                group.by = c("celltype_sig"))
+
+ggsave("result/umap_immu.png", plot, dpi = 300, width = 9, height = 7)
+
+datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 
+                       organism = 'mouse', 
+                       thres_sig = 0.005, 
+                       thres_cor = 0.5, 
+                       ncore = 10, 
+                       isFilter = TRUE)
+```
+
+# Data Integration
+dataintg <- integrate(dataimmu, datacanc)
+
+plot <- DimPlot(dataintg, pt.size = 0.1, label = T, repel = T, cols = sample(mycol),
+                raster = FALSE, label.size = 5, reduction = "umap",
+                group.by = c("sample"))
+
+ggsave("result/umap_intg.png", plot, dpi = 300, width = 9, height = 7)
+
+info <- dataintg@meta.data[c('celltype_sig', 'celltype_sig2')] 
+datafilt <- AddMetaData(datafilt, info) 
+datafilt <- autoumap(datafilt) 
+plot <- DimPlot(datafilt, pt.size = 0.1, label = T, repel = T, cols = sample(mycol),
+                raster = FALSE, label.size = 5, reduction = "umap",
+                group.by = c("celltype_sig2"))
+
+ggsave("result/umap_clusters.png", plot, dpi = 300, width = 9, height = 7)
+
+saveRDS(datafilt, 'data/sc_datafilt_anno.rds')
 
 
 ### Note: this package was built on seurat V4 and will be updated to support V5 in the future.

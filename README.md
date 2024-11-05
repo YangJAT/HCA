@@ -30,6 +30,7 @@ datafilt <- readRDS("data/sc_datafilt.rds")
 ```
 
 ## Celltype annotation 
+### Note: this package was built on seurat V4 and will be updated to support V5 in the future.
 For Human Single-Cell RNA Data:
 ```r
 non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")
@@ -73,5 +74,5 @@ dataintg <- integrate(dataimmu, datacanc,
 saveRDS(dataintg, 'data/sc_datafilt_anno.rds')
 ```
 
-### Note: this package was built on seurat V4 and will be updated to support V5 in the future.
+
 ![图片](https://github.com/YangJAT/HCA/assets/70686083/d8fb4993-175e-453f-bff6-45bcd8c91ef3)

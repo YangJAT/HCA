@@ -46,7 +46,7 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
                        ncore = 1, 
                        isFilter = TRUE)
 ```
-### note:If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.
+### Note: If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.
 
 For Mouse Single-Cell RNA Data:
 ```r

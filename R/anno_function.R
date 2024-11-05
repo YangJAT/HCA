@@ -1469,7 +1469,11 @@ anno_tumor <- function(datafilt = datafilt,
                      organism = organism,
                      ncore = ncore)
 
+      # plot thres
 
+      plot_thres(cnadata = cnadata,
+                 thres_sig = thres_sig,
+                 thres_cor = thres_cor)
 
       datacanc <- infer_tumor(datafilt = i, cnadata = cnadata,
                              thres_sig = thres_sig,
@@ -1500,6 +1504,12 @@ anno_tumor <- function(datafilt = datafilt,
                    scGate_DB = scGate_DB,
                    organism = organism,
                    ncore = ncore)
+
+    # plot thres
+
+    plot_thres(cnadata = cnadata,
+               thres_sig = thres_sig,
+               thres_cor = thres_cor)
 
     # annotate
 

@@ -12,23 +12,23 @@ This tutorial shows how to use HCA to identify cells with usual ‘gene set’ (
 
 ## Preprocess data:
 
->library(HCA)
->library(viridis)
->library(UCell)
->library(scGate)
->library(tibble)
->library(stringr)
->library(Seurat)
->library(iCNA)
->library(ggplot2)
->library(future.apply)
+>library(HCA) \
+>library(viridis) \
+>library(UCell) \
+>library(scGate) \
+>library(tibble) \
+>library(stringr) \
+>library(Seurat) \
+>library(iCNA) \
+>library(ggplot2) \
+>library(future.apply) \
 
 
->mycol <- c("#0070B2", "#5CB3DA", "#B8E3EA", "#DA1735", "#F15E4C", "#FF9F99",
->           "#A231A1", "#A37CB7", "#F2D7EE", "#B91372", "#E93B8C", "#ECB2C8",
->           "#FF7149", "#F7AE24", "#FBDD7E", "#679436", "#8BBE53", "#CDE391",
->           "#067D69", "#00A385", "#98D4C6", "#114B5F", "#028090", "#B2DBBF",
->           "#A23E48", "#CD6981", "#FBD0C0", "#788585", "#9CAEA9", "#CCDAD1")
+>mycol <- c("#0070B2", "#5CB3DA", "#B8E3EA", "#DA1735", "#F15E4C", "#FF9F99", \
+>           "#A231A1", "#A37CB7", "#F2D7EE", "#B91372", "#E93B8C", "#ECB2C8", \
+>           "#FF7149", "#F7AE24", "#FBDD7E", "#679436", "#8BBE53", "#CDE391", \
+>           "#067D69", "#00A385", "#98D4C6", "#114B5F", "#028090", "#B2DBBF", \
+>           "#A23E48", "#CD6981", "#FBD0C0", "#788585", "#9CAEA9", "#CCDAD1") \
 
 
 scGate_DB <- readRDS("E:/肝癌分组/表达谱/单细胞/scgate/auto_anno/scGate_DB.rds")

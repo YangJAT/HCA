@@ -42,7 +42,7 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
                        organism = 'human', 
                        thres_sig = 0.005, 
                        thres_cor = 0.5, 
-                       ncore = 10, 
+                       ncore = 1, 
                        isFilter = TRUE)
 ```
 ### note:If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.
@@ -59,7 +59,7 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
                        organism = 'mouse', 
                        thres_sig = 0.005, 
                        thres_cor = 0.5, 
-                       ncore = 10, 
+                       ncore = 1, 
                        isFilter = TRUE)
 ```
 

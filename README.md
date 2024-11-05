@@ -34,16 +34,16 @@ datafilt <- readRDS("data/sc_datafilt.rds")
 For Human Single-Cell RNA Data:
 ```r
 non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")
+
 #Annotating Immune Cells
 dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'human', non_epi = non_epi, min_cell = 100, ncore = 1)
-dataimmu <- autoumap(dataimmu)
 
 #Annotating Tumor Cells
 datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 
                        organism = 'human', 
                        thres_sig = 0.005, 
                        thres_cor = 0.5, 
-                       ncore = 10, 
+                       ncore = 1, 
                        isFilter = TRUE)
 ```
 ### note:If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.
@@ -51,27 +51,31 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
 For Mouse Single-Cell RNA Data:
 ```r
 non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-")
+
 #Annotating Immune Cells
 dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'mouse', non_epi = non_epi, min_cell = 100, ncore = 1)
-dataimmu <- autoumap(dataimmu)
 
 #Annotating Tumor Cells
 datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 
                        organism = 'mouse', 
                        thres_sig = 0.005, 
                        thres_cor = 0.5, 
-                       ncore = 10, 
+                       ncore = 1, 
                        isFilter = TRUE)
 ```
 
 # Data Integration
 ```r
+<<<<<<< HEAD
 dataintg <- integrate(dataimmu, datacanc,
                       min_tumor = 50,
                       rm_doublet = FALSE,
                       prop_doublet = 0.075)
 
 saveRDS(dataintg, 'data/sc_datafilt_anno.rds')
+=======
+dataintg <- integrate(dataimmu, datacanc)
+>>>>>>> 1b8a6ad29727ba45a01b9a29e9cefc7f74abeca6
 ```
 
 

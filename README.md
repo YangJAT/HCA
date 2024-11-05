@@ -1,4 +1,7 @@
 # HCA (Hierarchical Cell Annotation)
+
+![图片](https://github.com/user-attachments/assets/bdcd4e4b-7f14-4a06-a7c0-adb2615ff9ba)
+
 ## Abstract 
 This tutorial demonstrates how to use R packages for single-cell RNA data analysis, including cell type annotation, tumor cell annotation, and data integration.
 ## Installation and Loading Required R Packages
@@ -75,6 +78,4 @@ dataintg <- integrate(dataimmu, datacanc,
 saveRDS(dataintg, 'data/sc_datafilt_anno.rds')
 
 ```
-### Note: The iCNA package is essentially a more installable version of the infercna package (see https://github.com/jlaffy/infercna), created to address the challenges often encountered with installing infercna across different environments. If you use our package, please cite both our study (https://doi.org/10.1016/j.ccell.2024.10.008) and the related article for the infercna package (https://doi.org/10.1016/j.cell.2019.06.024).
-
-![图片](https://github.com/YangJAT/HCA/assets/70686083/d8fb4993-175e-453f-bff6-45bcd8c91ef3)
+##### Note: The iCNA package is essentially a more installable version of the infercna package (see https://github.com/jlaffy/infercna), created to address the challenges often encountered with installing infercna across different environments. If you use our package, please cite both our study (https://doi.org/10.1016/j.ccell.2024.10.008) and the related article for the infercna package (https://doi.org/10.1016/j.cell.2019.06.024).

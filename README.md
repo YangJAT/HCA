@@ -1,27 +1,35 @@
 # HCA (Hierarchical Cell Annotation)
 ## Abstract 
-This tutorial shows how to use HCA to identify cells with usual ‘gene set’ (i.e. gene signatures) in single-cell RNA-seq data. 
-## How to install this R package:
+This tutorial demonstrates how to use R packages for single-cell RNA data analysis, including cell type annotation, tumor cell annotation, and data integration.
+## Installation and Loading Required R Packages
 
->##You need to install iCNA R package first: \
->devtools::install_github('Liuzhicheng048/iCNA') \
->##Then you can install this package:\
->devtools::install_github('YangJAT/HCA')
+First, install and load the required R packages:
+
+```r
+devtools::install_github('Liuzhicheng048/iCNA')
+devtools::install_github('YangJAT/HCA')
+install.packages("viridis")
+install.packages("Seurat")
+install.packages("ggplot2")
+
+##Then load these packages:
+```r
+library(HCA)
+library(viridis)
+library(Seurat)
+library(iCNA)
+library(ggplot2)
+
 
 ## How to use this R package:
 
-## Preprocess data:
+## load data:
 
 >library(HCA) \
 >library(viridis) \
->library(UCell) \
->library(scGate) \
->library(tibble) \
->library(stringr) \
 >library(Seurat) \
 >library(iCNA) \
 >library(ggplot2) \
->library(future.apply) 
 >
 >
 >mycol <- c("#0070B2", "#5CB3DA", "#B8E3EA", "#DA1735", "#F15E4C", "#FF9F99", \
@@ -33,28 +41,8 @@ This tutorial shows how to use HCA to identify cells with usual ‘gene set’ (
 >
 >scGate_DB <- readRDS("scgate/auto_anno/scGate_DB.rds")
 >
->##load data
->
 >datafilt <- readRDS("data/sc_datafilt.rds")
 >
->datafilt=PercentageFeatureSet(datafilt, "^mt-", col.name = "percent_mito")
->
->par(mfrow=c(2,2))
->
->hist(datafilt$nFeature_RNA,breaks=300,prob=TRUE) \
->hist(datafilt$nCount_RNA,breaks=300,prob=TRUE) \
->hist(datafilt$percent_mito,breaks=300,prob=TRUE)
->
->dev.off()
->
->selected_c <- WhichCells(datafilt, expression = nFeature_RNA > 200 & nCount_RNA < 100000 & >nFeature_RNA < 10000) \
->selected_f <- rownames(datafilt)[Matrix::rowSums(datafilt@assays$RNA@counts > 0 ) > 3] \
->datafilt <- subset(datafilt, features = selected_f, cells = selected_c) \
->selected_mito <- WhichCells(datafilt , expression = percent_mito < 25)  \
->datafilt <- subset(datafilt, cells = selected_mito)
->
->dim(datafilt)
-
 ## Celltype annotation 
 >##for human scRNA:
 >

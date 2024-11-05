@@ -55,7 +55,7 @@ This tutorial shows how to use HCA to identify cells with usual ‘gene set’ (
 >
 >dim(datafilt)
 
-## Immune annotation 
+## Celltype annotation 
 >##for human scRNA:
 >
 >non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")
@@ -74,31 +74,31 @@ This tutorial shows how to use HCA to identify cells with usual ‘gene set’ (
 >                       organism = 'human', 
 >                      thres_sig = 0.005, 
 >                     thres_cor = 0.5, 
->                    ncore = 1, 
+>                    ncore = 10, 
 >                     isFilter = TRUE)
 
-# Integration ==============================
+# Integration
 
-dataintg <- integrate(dataimmu, datacanc)
-
-plot <- DimPlot(dataintg, pt.size = 0.1, label = T, repel = T, cols = sample(mycol),
-                raster = FALSE, label.size = 5, reduction = "umap",
-                group.by = c("sample"))
-
-ggsave("result/umap_intg.png", plot, dpi = 300, width = 9, height = 7)
-
-
-
-info<-dataintg@meta.data[c('celltype_sig','celltype_sig2')]
-datafilt<-AddMetaData(datafilt,info)
-datafilt<-autoumap(datafilt)
-plot <- DimPlot(datafilt, pt.size = 0.1, label = T, repel = T, cols = sample(mycol),
-                raster = FALSE, label.size = 5, reduction = "umap",
-                group.by = c("celltype_sig2"))
-
-ggsave("result/umap_clusters.png", plot, dpi = 300, width = 9, height = 7)
-
-saveRDS(datafilt,'data/sc_datafilt_anno.rds')
+>dataintg <- integrate(dataimmu, datacanc)
+>
+>plot <- DimPlot(dataintg, pt.size = 0.1, label = T, repel = T, cols = sample(mycol),
+>                raster = FALSE, label.size = 5, reduction = "umap",
+>               group.by = c("sample"))
+>
+>ggsave("result/umap_intg.png", plot, dpi = 300, width = 9, height = 7)
+>
+>
+>
+>info<-dataintg@meta.data[c('celltype_sig','celltype_sig2')]
+>datafilt<-AddMetaData(datafilt,info)
+>datafilt<-autoumap(datafilt)
+>plot <- DimPlot(datafilt, pt.size = 0.1, label = T, repel = T, cols = sample(mycol),
+>               raster = FALSE, label.size = 5, reduction = "umap",
+>                group.by = c("celltype_sig2"))
+>
+>ggsave("result/umap_clusters.png", plot, dpi = 300, width = 9, height = 7)
+>
+>saveRDS(datafilt,'data/sc_datafilt_anno.rds')
 
 
 ### Note: this package was built on seurat V4 and will be updated to support V5 in the future.

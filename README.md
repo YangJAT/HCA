@@ -29,33 +29,33 @@ This tutorial shows how to use HCA to identify cells with usual ‘gene set’ (
 >           "#FF7149", "#F7AE24", "#FBDD7E", "#679436", "#8BBE53", "#CDE391", \
 >           "#067D69", "#00A385", "#98D4C6", "#114B5F", "#028090", "#B2DBBF", \
 >          "#A23E48", "#CD6981", "#FBD0C0", "#788585", "#9CAEA9", "#CCDAD1")
+>
+>
+>scGate_DB <- readRDS("E:/肝癌分组/表达谱/单细胞/scgate/auto_anno/scGate_DB.rds") \
+>
+>##load data
+>
+>datafilt <- readRDS("data/sc_datafilt.rds") \
+>
+>datafilt=PercentageFeatureSet(datafilt, "^mt-", col.name = "percent_mito") \
+>
+>par(mfrow=c(2,2)) \
+>
+>hist(datafilt$nFeature_RNA,breaks=300,prob=TRUE) \
+>hist(datafilt$nCount_RNA,breaks=300,prob=TRUE) \
+>hist(datafilt$percent_mito,breaks=300,prob=TRUE)
+>
+>dev.off()
+>
+>selected_c <- WhichCells(datafilt, expression = nFeature_RNA > 200 & nCount_RNA < 100000 & >nFeature_RNA < 10000)
+>selected_f <- rownames(datafilt)[Matrix::rowSums(datafilt@assays$RNA@counts > 0 ) > 3]
+>datafilt <- subset(datafilt, features = selected_f, cells = selected_c)
+>selected_mito <- WhichCells(datafilt , expression = percent_mito < 25) 
+>datafilt <- subset(datafilt, cells = selected_mito)
+>
+>dim(datafilt)
 
-
-scGate_DB <- readRDS("E:/肝癌分组/表达谱/单细胞/scgate/auto_anno/scGate_DB.rds")
-
-##load data
-
-datafilt <- readRDS("data/sc_datafilt.rds")
-
-datafilt=PercentageFeatureSet(datafilt, "^mt-", col.name = "percent_mito")
-
-par(mfrow=c(2,2))
-
-hist(datafilt$nFeature_RNA,breaks=300,prob=TRUE)
-hist(datafilt$nCount_RNA,breaks=300,prob=TRUE)
-hist(datafilt$percent_mito,breaks=300,prob=TRUE)
-
-dev.off()
-
-selected_c <- WhichCells(datafilt, expression = nFeature_RNA > 200 & nCount_RNA < 100000 & nFeature_RNA < 10000)
-selected_f <- rownames(datafilt)[Matrix::rowSums(datafilt@assays$RNA@counts > 0 ) > 3]
-datafilt <- subset(datafilt, features = selected_f, cells = selected_c)
-selected_mito <- WhichCells(datafilt , expression = percent_mito < 25) 
-datafilt <- subset(datafilt, cells = selected_mito)
-
-dim(datafilt)
-
-# Immune annotation ==============================
+## Immune annotation ==============================
 ##for human scRNA:
 
 non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")

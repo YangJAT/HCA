@@ -65,7 +65,10 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
 
 # Data Integration
 ```r
-dataintg <- integrate(dataimmu, datacanc)
+dataintg <- integrate(dataimmu, datacanc,
+                      min_tumor = 50,
+                      rm_doublet = FALSE,
+                      prop_doublet = 0.075)
 
 saveRDS(dataintg, 'data/sc_datafilt_anno.rds')
 ```

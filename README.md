@@ -66,8 +66,6 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
 # Data Integration
 ```r
 dataintg <- integrate(dataimmu, datacanc)
-
-saveRDS(dataintg, 'data/sc_datafilt_anno.rds')
 ```
 
 ### Note: this package was built on seurat V4 and will be updated to support V5 in the future.

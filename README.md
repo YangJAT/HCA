@@ -31,15 +31,15 @@ This tutorial shows how to use HCA to identify cells with usual ‘gene set’ (
 >          "#A23E48", "#CD6981", "#FBD0C0", "#788585", "#9CAEA9", "#CCDAD1")
 >
 >
->scGate_DB <- readRDS("E:/肝癌分组/表达谱/单细胞/scgate/auto_anno/scGate_DB.rds") \
+>scGate_DB <- readRDS("scgate/auto_anno/scGate_DB.rds")
 >
 >##load data
 >
->datafilt <- readRDS("data/sc_datafilt.rds") \
+>datafilt <- readRDS("data/sc_datafilt.rds")
 >
->datafilt=PercentageFeatureSet(datafilt, "^mt-", col.name = "percent_mito") \
+>datafilt=PercentageFeatureSet(datafilt, "^mt-", col.name = "percent_mito")
 >
->par(mfrow=c(2,2)) \
+>par(mfrow=c(2,2))
 >
 >hist(datafilt$nFeature_RNA,breaks=300,prob=TRUE) \
 >hist(datafilt$nCount_RNA,breaks=300,prob=TRUE) \
@@ -47,10 +47,10 @@ This tutorial shows how to use HCA to identify cells with usual ‘gene set’ (
 >
 >dev.off()
 >
->selected_c <- WhichCells(datafilt, expression = nFeature_RNA > 200 & nCount_RNA < 100000 & >nFeature_RNA < 10000)
->selected_f <- rownames(datafilt)[Matrix::rowSums(datafilt@assays$RNA@counts > 0 ) > 3]
->datafilt <- subset(datafilt, features = selected_f, cells = selected_c)
->selected_mito <- WhichCells(datafilt , expression = percent_mito < 25) 
+>selected_c <- WhichCells(datafilt, expression = nFeature_RNA > 200 & nCount_RNA < 100000 & >nFeature_RNA < 10000) \
+>selected_f <- rownames(datafilt)[Matrix::rowSums(datafilt@assays$RNA@counts > 0 ) > 3] \
+>datafilt <- subset(datafilt, features = selected_f, cells = selected_c) \
+>selected_mito <- WhichCells(datafilt , expression = percent_mito < 25)  \
 >datafilt <- subset(datafilt, cells = selected_mito)
 >
 >dim(datafilt)

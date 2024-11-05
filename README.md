@@ -33,6 +33,7 @@ datafilt <- readRDS("data/sc_datafilt.rds")
 For Human Single-Cell RNA Data:
 ```r
 non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")
+
 #Annotating Immune Cells
 dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'human', non_epi = non_epi, min_cell = 100, ncore = 1)
 
@@ -49,9 +50,9 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
 For Mouse Single-Cell RNA Data:
 ```r
 non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-")
+
 #Annotating Immune Cells
 dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'mouse', non_epi = non_epi, min_cell = 100, ncore = 1)
-dataimmu <- autoumap(dataimmu)
 
 #Annotating Tumor Cells
 datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 

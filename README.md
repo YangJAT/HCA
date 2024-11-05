@@ -12,37 +12,30 @@ install.packages("viridis")
 install.packages("Seurat")
 install.packages("ggplot2")
 ```
+Then load these packages:
 
-##Then load these packages:
 ```r
 library(HCA)
 library(viridis)
 library(Seurat)
 library(iCNA)
 library(ggplot2)
+```
 
+Loading Data
+Define the color vector and load the data:
 
-## How to use this R package:
+```r
+mycol <- c("#0070B2", "#5CB3DA", "#B8E3EA", "#DA1735", "#F15E4C", "#FF9F99", 
+           "#A231A1", "#A37CB7", "#F2D7EE", "#B91372", "#E93B8C", "#ECB2C8", 
+           "#FF7149", "#F7AE24", "#FBDD7E", "#679436", "#8BBE53", "#CDE391", 
+           "#067D69", "#00A385", "#98D4C6", "#114B5F", "#028090", "#B2DBBF", 
+           "#A23E48", "#CD6981", "#FBD0C0", "#788585", "#9CAEA9", "#CCDAD1")
 
-## load data:
+scGate_DB <- readRDS("scgate/auto_anno/scGate_DB.rds")
+datafilt <- readRDS("data/sc_datafilt.rds")
+```
 
->library(HCA) \
->library(viridis) \
->library(Seurat) \
->library(iCNA) \
->library(ggplot2) \
->
->
->mycol <- c("#0070B2", "#5CB3DA", "#B8E3EA", "#DA1735", "#F15E4C", "#FF9F99", \
->           "#A231A1", "#A37CB7", "#F2D7EE", "#B91372", "#E93B8C", "#ECB2C8", \
->           "#FF7149", "#F7AE24", "#FBDD7E", "#679436", "#8BBE53", "#CDE391", \
->           "#067D69", "#00A385", "#98D4C6", "#114B5F", "#028090", "#B2DBBF", \
->          "#A23E48", "#CD6981", "#FBD0C0", "#788585", "#9CAEA9", "#CCDAD1")
->
->
->scGate_DB <- readRDS("scgate/auto_anno/scGate_DB.rds")
->
->datafilt <- readRDS("data/sc_datafilt.rds")
 >
 ## Celltype annotation 
 >##for human scRNA:

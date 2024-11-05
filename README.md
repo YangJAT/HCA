@@ -79,6 +79,7 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
 ```
 
 # Data Integration
+```r
 dataintg <- integrate(dataimmu, datacanc)
 
 plot <- DimPlot(dataintg, pt.size = 0.1, label = T, repel = T, cols = sample(mycol),
@@ -97,7 +98,7 @@ plot <- DimPlot(datafilt, pt.size = 0.1, label = T, repel = T, cols = sample(myc
 ggsave("result/umap_clusters.png", plot, dpi = 300, width = 9, height = 7)
 
 saveRDS(datafilt, 'data/sc_datafilt_anno.rds')
-
+```
 
 ### Note: this package was built on seurat V4 and will be updated to support V5 in the future.
 ![图片](https://github.com/YangJAT/HCA/assets/70686083/d8fb4993-175e-453f-bff6-45bcd8c91ef3)

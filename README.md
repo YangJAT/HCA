@@ -2,7 +2,7 @@
 
 ![图片](https://github.com/user-attachments/assets/bdcd4e4b-7f14-4a06-a7c0-adb2615ff9ba)
 
-### Note: this package was built on seurat V4 and will be updated to support V5 in the future.
+Note: this package was built on seurat V4 and will be updated to support V5 in the future.
 
 ## Abstract 
 This tutorial demonstrates how to use R packages for single-cell RNA data analysis, including cell type annotation, tumor cell annotation, and data integration.
@@ -51,7 +51,7 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
                        ncore = 1, 
                        isFilter = TRUE)
 ```
-### Note: If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.
+Note: If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.
 
 For Mouse Single-Cell RNA Data:
 ```r

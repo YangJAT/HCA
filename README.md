@@ -2,6 +2,8 @@
 
 ![图片](https://github.com/user-attachments/assets/bdcd4e4b-7f14-4a06-a7c0-adb2615ff9ba)
 
+### Note: this package was built on seurat V4 and will be updated to support V5 in the future.
+
 ## Abstract 
 This tutorial demonstrates how to use R packages for single-cell RNA data analysis, including cell type annotation, tumor cell annotation, and data integration.
 ## Installation and Loading Required R Packages
@@ -33,7 +35,7 @@ datafilt <- readRDS("data/sc_datafilt.rds")
 ```
 
 ## Celltype annotation 
-### Note: this package was built on seurat V4 and will be updated to support V5 in the future.
+
 For Human Single-Cell RNA Data:
 ```r
 non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")

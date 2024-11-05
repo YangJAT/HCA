@@ -34,8 +34,7 @@ For Human Single-Cell RNA Data:
 ```r
 non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")
 #Annotating Immune Cells
-dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'human',
-non_epi = non_epi, min_cell = 100, ncore = 1)
+dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'human', non_epi = non_epi, min_cell = 100, ncore = 1)
 
 #Annotating Tumor Cells
 datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 

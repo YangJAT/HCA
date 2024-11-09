@@ -82,5 +82,39 @@ dataintg <- integrate(dataimmu, datacanc,
 saveRDS(dataintg, 'data/sc_datafilt_anno.rds')
 
 ```
+
+After running, the Seurat object will include celltype_sig2, representing the annotation results.
+
+# Further filtering
+```r
+
+dataintg <- autocluster(dataintg, nfeatures = 2000,
+                        ndim = 15, neigh = 20,
+                        dist = 1, res = 3) # Set a higher resolution (res) to capture more clusters
+
+# celltype visualization
+dimplot_new(dataintg,
+            reduction = "umap",
+            pt.size = 0.2, label = T,
+            group.by = c("celltype_sig2"))
+
+# High-resolution clustering visualization
+dimplot_new(dataintg,
+            reduction = "umap",
+            pt.size = 0.5, label = T,
+            group.by = c("seurat_clusters"))
+```
+
+# Visualization
+```r
+
+dataintg <- autocluster(dataintg, nfeatures = 2000,
+                        ndim = 15, neigh = 20,
+                        dist = 1, res = 3) 
+
+saveRDS(dataintg, 'data/sc_datafilt_anno.rds')
+
+```
+
 Note: The iCNA package is essentially a more installable version of the infercna package (see https://github.com/jlaffy/infercna), created to address the challenges often encountered with installing infercna across different environments. If you use our package, please cite both our study (https://doi.org/10.1016/j.ccell.2024.10.008) and the related article for the infercna package (https://doi.org/10.1016/j.cell.2019.06.024).
 

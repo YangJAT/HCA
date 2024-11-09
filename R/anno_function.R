@@ -68,7 +68,7 @@ anno_function <- function(data = data,
   # Annotate the cells----------
 
   plan(multisession, workers = ncol(sigscore))
-  options(future.globals.maxSize = 3000*1024^2)
+  options(future.globals.maxSize = 30000*1024^2)
 
   cellanno <- do.call(rbind, future_lapply(colnames(sigscore), function(i){
 
@@ -167,7 +167,7 @@ anno_function2 <- function(data = data,
   # annotate the cells ----------
 
   plan(multisession, workers = ncol(sigscore))
-  options(future.globals.maxSize = 3000*1024^2)
+  options(future.globals.maxSize = 30000*1024^2)
 
   cellanno <- do.call(rbind, future_lapply(colnames(sigscore), function(i){
 

@@ -2,10 +2,15 @@
 
 ![图片](https://github.com/user-attachments/assets/bdcd4e4b-7f14-4a06-a7c0-adb2615ff9ba)
 
+This tutorial shows how to use R packages for single-cell RNA data analysis, including immune cell annotation, tumor cell annotation, and data integration.
+
+ <br>
+
 ## Note
+### Dependency issues
 This package has several dependencies with version constraints: <br>
-1. Seurat: version < 5. <br>
-2. scGate: version = 1.2.0. <br>
+1. Seurat: version <5 (excluding 4.9); 4.3 recommended <br>
+2. scGate: version = 1.2.0 <br>
 3. future: version = 1.31.0 <br>
 ```r
 # scGate
@@ -17,9 +22,10 @@ remotes::install_github("carmonalab/scGate", ref="v1.2.0")
 install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source")
 
 ```
+### Memory issues
+We recommend utilizing a high-memory server for optimal performance with this package. Running it on a personal computer is possible, though it may result in substantially slower processing speeds.
 
-## Introduction 
-This tutorial demonstrates how to use R packages for single-cell RNA data analysis, including cell type annotation, tumor cell annotation, and data integration.
+ <br>
 
 ## Loading Required R Packages
 
@@ -40,43 +46,42 @@ scGate_DB <- readRDS("data/scGate_DB.rds")
 datafilt <- readRDS("data/sc_datafilt.rds")
 ```
 
+datafilt is a Seurat object requiring only essential cell filtering, with no need for further processing. 
+
+ <br>
+
 ## Celltype annotation 
 
-### For Human Single-Cell RNA Data:
+### Annotating Immune Cells
 ```r
-non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")
+non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-") # for human
+non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-") # for mouse
 
-#Annotating Immune Cells
-dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'human', non_epi = non_epi, min_cell = 100, ncore = 1)
+dataimmu <- anno_immune(datafilt,
+                        scGate_DB = scGate_DB,
+                        organism = 'human', # or mouse
+                        non_epi = non_epi,
+                        min_cell = 100,
+                        ncore = 1) # Multi-core functionality is not available on Windows
+```
 
-#Annotating Tumor Cells
-datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 
-                       organism = 'human', 
+### Annotating Tumor Cells
+Note: This step is optional. If your data has undergone CD45 sorting, then you only need to run immune cell annotation, and data integration can also be skipped. 
+```r
+datacanc <- anno_tumor(datafilt,
+                       scGate_DB = scGate_DB, 
+                       organism = 'human', # or mouse
                        thres_sig = 0.005, # Adjust this threshold based on scatter_plot.png
                        thres_cor = 0.5, # Adjust this threshold based on scatter_plot.png
                        ncore = 1, # Multi-core functionality is not available on Windows
                        isFilter = TRUE)
 ```
+
 If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.
 
-![图片](https://github.com/user-attachments/assets/2bde04d6-5f2a-4406-94aa-5354325ab457)
+![图片](https://github.com/user-attachments/assets/1f66831c-f017-4c73-82c8-136e53c79f85)
 
-
-### For Mouse Single-Cell RNA Data:
-```r
-non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-")
-
-#Annotating Immune Cells
-dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'mouse', non_epi = non_epi, min_cell = 100, ncore = 1)
-
-#Annotating Tumor Cells
-datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 
-                       organism = 'mouse', 
-                       thres_sig = 0.005, 
-                       thres_cor = 0.5, 
-                       ncore = 1, 
-                       isFilter = TRUE)
-```
+ <br>
 
 ## Data Integration
 ```r
@@ -86,11 +91,13 @@ dataintg <- integrate(dataimmu, datacanc,
                       rm_doublet = FALSE,
                       prop_doublet = 0.075)
 
-saveRDS(dataintg, 'data/sc_datafilt_anno.rds')
-
+# If you skipped the annotation of tumor cells, please run
+# dataintg <- dataimmu
 ```
 
 After running, the Seurat object will include celltype_sig2, representing the annotation results.
+
+ <br>
 
 ## Further filtering
 ```r
@@ -118,17 +125,36 @@ dimplot_new(dataintg,
             group.by = c("seurat_clusters"))
 ```
 
-## Visualization
+Simultaneously review the cell type annotations and Seurat clustering results, removing clusters that encompass cells from divergent lineages (e.g., myeloid and lymphoid lineages within a single cluster) or clusters with atypical spatial positioning on the UMAP plot (e.g., T cell subsets positioned in close proximity to myeloid cells).
+
+![图片](https://github.com/user-attachments/assets/6cb03d4b-832e-4563-b8e3-13a8ebe285f3)
+
 ```r
+# exclude any problematic clusters
 
-source("data/Other functions.R")
+select = c("31","35","39","40","51")
+dataintg <- dataintg[,!(dataintg$seurat_clusters %in% select)]
 
-# umap visualization
+# re-analyze
+
+dataintg <- autocluster(dataintg, nfeatures = 2000,
+                        ndim = 15, neigh = 20,
+                        dist = 1, res = 3)
 
 dimplot_new(dataintg,
             reduction = "umap",
             pt.size = 0.2, label = T,
             group.by = c("celltype_sig2"))
+```
+
+![图片](https://github.com/user-attachments/assets/58d3954d-0928-4415-a78e-94c692456517)
+
+ <br>
+
+## Visualization
+```r
+
+source("data/Other functions.R")
 
 # dotplot visualization (with default gene set)
 
@@ -155,6 +181,7 @@ dotplot_marker(dataintg,
                output = name,
                height = 6)
 ```
+![图片](https://github.com/user-attachments/assets/af7ef1fa-193f-4715-acdc-5765d7ca6e90)
 
 
 This visualization specifically delineates the comparison between the control and experimental groups
@@ -166,7 +193,7 @@ source("data/Other functions.R")
 
 prop_density(datafilt = datafilt,
              group = "group", # grouping information
-             coord = "umap_harmony")
+             coord = "umap")
 
 # Back-to-back plot
 
@@ -180,6 +207,11 @@ prop_back2back(datafilt = datafilt,
 input <- data.frame(table(dataimmu$sample, dataimmu$celltype_sig2))
 prop_plot_hca(input, rotate = 45, decreasing = T, species = "human")
 ```
+![图片](https://github.com/user-attachments/assets/35e35a93-5075-4392-adfd-0348b746436f)
+
+More analysis and visualization capabilities will be introduced in upcoming updates.
+
+ <br>
 
 ## How to cite
 The iCNA package is essentially a more installable version of the infercna package (see https://github.com/jlaffy/infercna), created to address the challenges often encountered with installing infercna across different environments. If you use our package, please cite both our study (https://doi.org/10.1016/j.ccell.2024.10.008) and the related article for the infercna package (https://doi.org/10.1016/j.cell.2019.06.024).

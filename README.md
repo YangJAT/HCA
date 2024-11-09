@@ -71,7 +71,7 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
                        isFilter = TRUE)
 ```
 
-# Data Integration
+## Data Integration
 ```r
 
 dataintg <- integrate(dataimmu, datacanc,
@@ -85,7 +85,7 @@ saveRDS(dataintg, 'data/sc_datafilt_anno.rds')
 
 After running, the Seurat object will include celltype_sig2, representing the annotation results.
 
-# Further filtering
+## Further filtering
 ```r
 
 dataintg <- autocluster(dataintg, nfeatures = 2000,
@@ -105,14 +105,31 @@ dimplot_new(dataintg,
             group.by = c("seurat_clusters"))
 ```
 
-# Visualization
+## Visualization
+
+This visualization specifically delineates the comparison between the control and experimental groups
 ```r
 
-dataintg <- autocluster(dataintg, nfeatures = 2000,
-                        ndim = 15, neigh = 20,
-                        dist = 1, res = 3) 
+# UMAP density plot
+prop_density(datafilt = datafilt,
+             group = "group",
+             coord = "umap_harmony")
 
-saveRDS(dataintg, 'data/sc_datafilt_anno.rds')
+# Back-to-back plot
+prop_back2back(datafilt = datafilt,
+               group = "group",
+               cluster = "seurat_clusters",
+               order = TRUE)
+
+prop_back2back_lollipop(datafilt = dataimmu,
+                        group = "group",
+                        group1 = "H",
+                        group2 = "L",
+                        cluster = "celltype_sig2")
+
+# Sample-level proportional distribution difference
+input <- data.frame(table(dataimmu$sample, dataimmu$celltype_sig2))
+prop_plot_hca(input, rotate = 45, decreasing = T, species = "human")
 
 ```
 

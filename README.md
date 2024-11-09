@@ -42,15 +42,17 @@ datafilt <- readRDS("data/sc_datafilt.rds")
 
 ## Celltype annotation 
 
+Annotating Immune Cells
 ```r
 non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-") # for human
 non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-") # for mouse
 
-#Annotating Immune Cells
 dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'human', # or mouse
                         non_epi = non_epi, min_cell = 100, ncore = 1)
+```
 
-#Annotating Tumor Cells
+Annotating Tumor Cells
+```r
 datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 
                        organism = 'human', 
                        thres_sig = 0.005, # Adjust this threshold based on scatter_plot.png
@@ -58,6 +60,7 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
                        ncore = 1, # Multi-core functionality is not available on Windows
                        isFilter = TRUE)
 ```
+
 If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.
 
 ![图片](https://github.com/user-attachments/assets/1f66831c-f017-4c73-82c8-136e53c79f85)

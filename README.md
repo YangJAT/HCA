@@ -42,7 +42,7 @@ datafilt <- readRDS("data/sc_datafilt.rds")
 
 ## Celltype annotation 
 
-For Human Single-Cell RNA Data:
+### For Human Single-Cell RNA Data:
 ```r
 non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-")
 
@@ -57,9 +57,12 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
                        ncore = 1, # Multi-core functionality is not available on Windows
                        isFilter = TRUE)
 ```
-Note: If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.
+If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.
 
-For Mouse Single-Cell RNA Data:
+![图片](https://github.com/user-attachments/assets/2bde04d6-5f2a-4406-94aa-5354325ab457)
+
+
+### For Mouse Single-Cell RNA Data:
 ```r
 non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-")
 

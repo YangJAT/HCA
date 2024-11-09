@@ -60,7 +60,7 @@ datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB,
 ```
 If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.
 
-![图片](https://github.com/user-attachments/assets/aca356a2-4896-40e8-a4a1-767198e3656f)
+![图片](https://github.com/user-attachments/assets/1f66831c-f017-4c73-82c8-136e53c79f85)
 
 ## Data Integration
 ```r

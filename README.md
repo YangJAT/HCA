@@ -66,7 +66,7 @@ Note: This step is optional. If your data has undergone CD45 sorting, then you o
 ```r
 datacanc <- anno_tumor(datafilt,
                        scGate_DB = scGate_DB, 
-                       organism = 'human', 
+                       organism = 'human', # or mouse
                        thres_sig = 0.005, # Adjust this threshold based on scatter_plot.png
                        thres_cor = 0.5, # Adjust this threshold based on scatter_plot.png
                        ncore = 1, # Multi-core functionality is not available on Windows
@@ -115,6 +115,28 @@ dimplot_new(dataintg,
             reduction = "umap",
             pt.size = 0.5, label = T,
             group.by = c("seurat_clusters"))
+```
+
+Simultaneously review the cell type annotations and Seurat clustering results, removing clusters that encompass cells from divergent lineages (e.g., myeloid and lymphoid lineages within a single cluster) or clusters with atypical spatial positioning on the UMAP plot (e.g., T cell subsets positioned in close proximity to myeloid cells).
+
+![图片](https://github.com/user-attachments/assets/6cb03d4b-832e-4563-b8e3-13a8ebe285f3)
+
+```r
+# exclude any problematic clusters
+
+select = c("56")
+dataintg <- dataintg[,!(dataintg$seurat_clusters %in% select)]
+
+# re-analyze
+
+dataintg <- autocluster(dataintg, nfeatures = 2000,
+                        ndim = 15, neigh = 20,
+                        dist = 1, res = 3)
+
+dimplot_new(dataintg,
+            reduction = "umap",
+            pt.size = 0.2, label = T,
+            group.by = c("celltype_sig2"))
 ```
 
 ## Visualization

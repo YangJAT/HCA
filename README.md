@@ -69,8 +69,8 @@ dataimmu <- anno_immune(datafilt,
 ```
 
 ### Annotating Tumor Cells
-Note 1: This step is optional. If your data has undergone CD45 sorting, then you only need to run immune cell annotation, and data integration can also be skipped. 
-Note 2: The input Seurat object must include a column labeled "sample" to define the cell-to-sample correspondence
+Note 1: This step is optional. If your data has undergone CD45 sorting, then you only need to run immune cell annotation, and data integration can also be skipped. <br>
+Note 2: The input Seurat object must include a column labeled "sample" to define the cell-to-sample correspondence.
 ```r
 datacanc <- anno_tumor(datafilt,
                        scGate_DB = scGate_DB, 

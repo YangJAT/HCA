@@ -16,6 +16,7 @@ devtools::install_github('YangJAT/HCA')
 install.packages("viridis")
 install.packages("Seurat")
 install.packages("ggplot2")
+install.packages("stringr")
 ```
 Then load these packages:
 
@@ -25,6 +26,7 @@ library(viridis)
 library(Seurat)
 library(iCNA)
 library(ggplot2)
+library(stringr)
 ```
 
 load the data:

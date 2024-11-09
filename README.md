@@ -110,13 +110,15 @@ dimplot_new(dataintg,
 
 ## Visualization
 ```r
-umap visualization
+# umap visualization
+
 dimplot_new(dataintg,
             reduction = "umap",
             pt.size = 0.2, label = T,
             group.by = c("celltype_sig2"))
 
 # dotplot visualization (with default gene set)
+
 name = "marker_dotplot.pdf"
 dotplot_marker(dataintg,
                group.by = "celltype_sig2",
@@ -126,6 +128,7 @@ dotplot_marker(dataintg,
                height = 6)
 
 # dotplot visualization (manually selected gene set)
+
 Tcell = c("Cd3d", "Cd3e")
 CD8T = c("Cd8a", "Cd8b1")
 gene_list <- list(name1 = Tcell,
@@ -145,23 +148,20 @@ This visualization specifically delineates the comparison between the control an
 ```r
 
 # UMAP density plot
+
 prop_density(datafilt = datafilt,
              group = "group", # grouping information
              coord = "umap_harmony")
 
 # Back-to-back plot
+
 prop_back2back(datafilt = datafilt,
                group = "group", # grouping information
                cluster = "seurat_clusters",
                order = TRUE)
 
-prop_back2back_lollipop(datafilt = dataimmu,
-                        group = "group", # grouping information
-                        group1 = "name1", # group name 1
-                        group2 = "name2", # group name 2
-                        cluster = "celltype_sig2")
-
 # Sample-level proportional distribution difference
+
 input <- data.frame(table(dataimmu$sample, dataimmu$celltype_sig2))
 prop_plot_hca(input, rotate = 45, decreasing = T, species = "human")
 ```

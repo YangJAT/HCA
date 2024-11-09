@@ -2,7 +2,7 @@
 
 ![图片](https://github.com/user-attachments/assets/bdcd4e4b-7f14-4a06-a7c0-adb2615ff9ba)
 
-This tutorial shows how to use R packages for single-cell RNA data analysis, including immune cell annotation, tumor cell annotation, and data integration.
+This tutorial shows how to use HCA R package for single-cell RNA data analysis, including immune cell annotation, tumor cell annotation, and data integration.
 
  <br>
 
@@ -50,7 +50,7 @@ scGate_DB <- readRDS("data/scGate_DB.rds")
 datafilt <- readRDS("data/sc_datafilt.rds")
 ```
 
-datafilt is a Seurat object requiring only essential cell filtering, with no need for further processing. 
+"datafilt" is a Seurat object that requires only basic cell filtering and includes a column labeled "sample" to define the cell-to-sample correspondence, with no need for additional processing. 
 
  <br>
 
@@ -63,18 +63,19 @@ non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-") # for mou
 
 dataimmu <- anno_immune(datafilt,
                         scGate_DB = scGate_DB,
-                        organism = 'human', # or mouse
+                        organism = "human", # or mouse
                         non_epi = non_epi,
                         min_cell = 100,
                         ncore = 1) # Multi-core functionality is not available on Windows
 ```
 
 ### Annotating Tumor Cells
-Note: This step is optional. If your data has undergone CD45 sorting, then you only need to run immune cell annotation, and data integration can also be skipped. 
+Note 1: This step is optional. If your data has undergone CD45 sorting, then you only need to run immune cell annotation, and data integration can also be skipped. <br>
+Note 2: The input Seurat object must include a column labeled "sample" to define the cell-to-sample correspondence.
 ```r
 datacanc <- anno_tumor(datafilt,
                        scGate_DB = scGate_DB, 
-                       organism = 'human', # or mouse
+                       organism = "human", # or mouse
                        thres_sig = 0.005, # Adjust this threshold based on scatter_plot.png
                        thres_cor = 0.5, # Adjust this threshold based on scatter_plot.png
                        ncore = 1, # Multi-core functionality is not available on Windows
@@ -99,7 +100,7 @@ dataintg <- integrate(dataimmu, datacanc,
 # dataintg <- dataimmu
 ```
 
-After running, the Seurat object will include celltype_sig2, representing the annotation results.
+After running, the Seurat object will contain a column labeled "celltype_sig2," representing the annotation results. 
 
  <br>
 

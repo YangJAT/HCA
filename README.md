@@ -91,17 +91,23 @@ After running, the Seurat object will include celltype_sig2, representing the an
 ## Further filtering
 ```r
 
+source("data/Other functions.R")
+
+# clustering
+
 dataintg <- autocluster(dataintg, nfeatures = 2000,
                         ndim = 15, neigh = 20,
                         dist = 1, res = 3) # Set a higher resolution (res) to capture more clusters
 
 # celltype visualization
+
 dimplot_new(dataintg,
             reduction = "umap",
             pt.size = 0.2, label = T,
             group.by = c("celltype_sig2"))
 
 # High-resolution clustering visualization
+
 dimplot_new(dataintg,
             reduction = "umap",
             pt.size = 0.5, label = T,
@@ -110,6 +116,9 @@ dimplot_new(dataintg,
 
 ## Visualization
 ```r
+
+source("data/Other functions.R")
+
 # umap visualization
 
 dimplot_new(dataintg,
@@ -146,6 +155,8 @@ dotplot_marker(dataintg,
 
 This visualization specifically delineates the comparison between the control and experimental groups
 ```r
+
+source("data/Other functions.R")
 
 # UMAP density plot
 

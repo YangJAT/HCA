@@ -62,18 +62,19 @@ non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-") # for mou
 
 dataimmu <- anno_immune(datafilt,
                         scGate_DB = scGate_DB,
-                        organism = 'human', # or mouse
+                        organism = "human", # or mouse
                         non_epi = non_epi,
                         min_cell = 100,
                         ncore = 1) # Multi-core functionality is not available on Windows
 ```
 
 ### Annotating Tumor Cells
-Note: This step is optional. If your data has undergone CD45 sorting, then you only need to run immune cell annotation, and data integration can also be skipped. 
+Note 1: This step is optional. If your data has undergone CD45 sorting, then you only need to run immune cell annotation, and data integration can also be skipped. 
+Note 2: The input Seurat object must include a column labeled "sample" to define the cell-to-sample correspondence
 ```r
 datacanc <- anno_tumor(datafilt,
                        scGate_DB = scGate_DB, 
-                       organism = 'human', # or mouse
+                       organism = "human", # or mouse
                        thres_sig = 0.005, # Adjust this threshold based on scatter_plot.png
                        thres_cor = 0.5, # Adjust this threshold based on scatter_plot.png
                        ncore = 1, # Multi-core functionality is not available on Windows

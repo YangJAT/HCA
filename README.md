@@ -19,7 +19,7 @@ install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source")
 ```
 
 ## Introduction 
-This tutorial demonstrates how to use R packages for single-cell RNA data analysis, including cell type annotation, tumor cell annotation, and data integration.
+This tutorial demonstrates how to use R packages for single-cell RNA data analysis, including immune cell annotation, tumor cell annotation, and data integration.
 
 ## Loading Required R Packages
 

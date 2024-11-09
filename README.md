@@ -3,6 +3,7 @@
 ![图片](https://github.com/user-attachments/assets/bdcd4e4b-7f14-4a06-a7c0-adb2615ff9ba)
 
 ## Note
+### Dependency issues
 This package has several dependencies with version constraints: <br>
 1. Seurat: version <5 (excluding 4.9); 4.3 recommended <br>
 2. scGate: version = 1.2.0 <br>
@@ -17,6 +18,8 @@ remotes::install_github("carmonalab/scGate", ref="v1.2.0")
 install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source")
 
 ```
+### Memory issues
+We recommend utilizing a high-memory server for optimal performance with this package. Running it on a personal computer is possible, though it may result in substantially slower processing speeds.
 
 ## Introduction 
 This tutorial demonstrates how to use R packages for single-cell RNA data analysis, including immune cell annotation, tumor cell annotation, and data integration.

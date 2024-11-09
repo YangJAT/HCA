@@ -15,11 +15,11 @@ This package has several dependencies with version constraints: <br>
 ```r
 # scGate
 library(remotes)
-remotes::install_github("carmonalab/scGate", ref="v1.2.0")
+remotes::install_github("carmonalab/scGate", ref = "v1.2.0")
 
 # future
 # download future_1.31.0.tar.gz from https://cran.r-project.org/src/contrib/Archive/future/
-install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source")
+install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source") # Install from a local directory
 
 # install our package
 devtools::install_github('Liuzhicheng048/iCNA')

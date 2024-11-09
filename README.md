@@ -4,8 +4,8 @@
 
 ## Note
 This package has several dependencies with version constraints: <br>
-1. Seurat: version < 5. <br>
-2. scGate: version = 1.2.0. <br>
+1. Seurat: Version <5 (excluding 4.9); 4.3 recommended <br>
+2. scGate: version = 1.2.0 <br>
 3. future: version = 1.31.0 <br>
 ```r
 # scGate

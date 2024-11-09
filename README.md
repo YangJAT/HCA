@@ -42,7 +42,7 @@ datafilt <- readRDS("data/sc_datafilt.rds")
 
 ## Celltype annotation 
 
-Annotating Immune Cells
+### Annotating Immune Cells
 ```r
 non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-") # for human
 non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-") # for mouse
@@ -51,7 +51,8 @@ dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'human', # o
                         non_epi = non_epi, min_cell = 100, ncore = 1)
 ```
 
-Annotating Tumor Cells
+### Annotating Tumor Cells
+Note: This step is optional. If your data has undergone CD45 sorting, then you only need to run immune cell annotation, and data integration can also be skipped. 
 ```r
 datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 
                        organism = 'human', 
@@ -73,8 +74,8 @@ dataintg <- integrate(dataimmu, datacanc,
                       rm_doublet = FALSE,
                       prop_doublet = 0.075)
 
-saveRDS(dataintg, 'data/sc_datafilt_anno.rds')
-
+# If you skipped the annotation of tumor cells, please run
+# dataintg <- dataimmu
 ```
 
 After running, the Seurat object will include celltype_sig2, representing the annotation results.

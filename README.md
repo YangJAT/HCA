@@ -30,7 +30,7 @@ library(ggplot2)
 load the data:
 
 ```r
-scGate_DB <- readRDS("scgate/auto_anno/scGate_DB.rds")
+scGate_DB <- readRDS("data/scGate_DB.rds")
 datafilt <- readRDS("data/sc_datafilt.rds")
 ```
 

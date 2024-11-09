@@ -2,7 +2,17 @@
 
 ![图片](https://github.com/user-attachments/assets/bdcd4e4b-7f14-4a06-a7c0-adb2615ff9ba)
 
-Note: this package was built on seurat V4 and will be updated to support V5 in the future.
+## Note
+Two dependencies of this package have version constraints:
+Seurat: version < 5.
+scGate: version = 1.2.0.
+
+```r
+library(remotes)
+remotes::install_github("carmonalab/scGate", ref="v1.6.2")
+```
+
+this package will be updated to support V5 in the future.
 
 ## Abstract 
 This tutorial demonstrates how to use R packages for single-cell RNA data analysis, including cell type annotation, tumor cell annotation, and data integration.

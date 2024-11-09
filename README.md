@@ -46,6 +46,8 @@ scGate_DB <- readRDS("data/scGate_DB.rds")
 datafilt <- readRDS("data/sc_datafilt.rds")
 ```
 
+ <br>
+
 ## Celltype annotation 
 
 ### Annotating Immune Cells
@@ -77,6 +79,8 @@ If the code runs successfully, an image (inferCNV/scatter_plot.png) will be gene
 
 ![图片](https://github.com/user-attachments/assets/1f66831c-f017-4c73-82c8-136e53c79f85)
 
+ <br>
+
 ## Data Integration
 ```r
 
@@ -90,6 +94,8 @@ dataintg <- integrate(dataimmu, datacanc,
 ```
 
 After running, the Seurat object will include celltype_sig2, representing the annotation results.
+
+ <br>
 
 ## Further filtering
 ```r
@@ -124,7 +130,7 @@ Simultaneously review the cell type annotations and Seurat clustering results, r
 ```r
 # exclude any problematic clusters
 
-select = c("56")
+select = c("31","35","39","40","51")
 dataintg <- dataintg[,!(dataintg$seurat_clusters %in% select)]
 
 # re-analyze
@@ -138,6 +144,10 @@ dimplot_new(dataintg,
             pt.size = 0.2, label = T,
             group.by = c("celltype_sig2"))
 ```
+
+![图片](https://github.com/user-attachments/assets/abb969cb-c735-45dc-9bda-54c92b267649)
+
+ <br>
 
 ## Visualization
 ```r
@@ -201,6 +211,8 @@ prop_back2back(datafilt = datafilt,
 input <- data.frame(table(dataimmu$sample, dataimmu$celltype_sig2))
 prop_plot_hca(input, rotate = 45, decreasing = T, species = "human")
 ```
+
+ <br>
 
 ## How to cite
 The iCNA package is essentially a more installable version of the infercna package (see https://github.com/jlaffy/infercna), created to address the challenges often encountered with installing infercna across different environments. If you use our package, please cite both our study (https://doi.org/10.1016/j.ccell.2024.10.008) and the related article for the infercna package (https://doi.org/10.1016/j.cell.2019.06.024).

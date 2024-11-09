@@ -3,9 +3,9 @@
 ![图片](https://github.com/user-attachments/assets/bdcd4e4b-7f14-4a06-a7c0-adb2615ff9ba)
 
 ## Note
-Two dependencies of this package have version constraints:
-Seurat: version < 5.
-scGate: version = 1.2.0.
+Two dependencies of this package have version constraints: <br>
+Seurat: version < 5. <br>
+scGate: version = 1.2.0. <br>
 
 ```r
 library(remotes)

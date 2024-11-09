@@ -20,27 +20,16 @@ install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source")
 
 ## Abstract 
 This tutorial demonstrates how to use R packages for single-cell RNA data analysis, including cell type annotation, tumor cell annotation, and data integration.
-## Installation and Loading Required R Packages
-
-First, install and load the required R packages:
-
-```r
-devtools::install_github('Liuzhicheng048/iCNA')
-devtools::install_github('YangJAT/HCA')
-install.packages("viridis")
-install.packages("Seurat")
-install.packages("ggplot2")
-install.packages("stringr")
-```
-Then load these packages:
+## Loading Required R Packages
 
 ```r
 library(HCA)
 library(viridis)
 library(Seurat)
 library(iCNA)
-library(ggplot2)
 library(stringr)
+library(scGate)
+library(future)
 ```
 
 load the data:

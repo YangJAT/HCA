@@ -99,7 +99,7 @@ dataintg <- integrate(dataimmu, datacanc,
 # dataintg <- dataimmu
 ```
 
-After running, the Seurat object will include celltype_sig2, representing the annotation results.
+After running, the Seurat object will contain a column labeled "celltype_sig2," representing the annotation results. 
 
  <br>
 

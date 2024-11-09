@@ -145,7 +145,7 @@ dimplot_new(dataintg,
             group.by = c("celltype_sig2"))
 ```
 
-![图片](https://github.com/user-attachments/assets/abb969cb-c735-45dc-9bda-54c92b267649)
+![图片](https://github.com/user-attachments/assets/58d3954d-0928-4415-a78e-94c692456517)
 
  <br>
 
@@ -153,13 +153,6 @@ dimplot_new(dataintg,
 ```r
 
 source("data/Other functions.R")
-
-# umap visualization
-
-dimplot_new(dataintg,
-            reduction = "umap",
-            pt.size = 0.2, label = T,
-            group.by = c("celltype_sig2"))
 
 # dotplot visualization (with default gene set)
 
@@ -186,6 +179,7 @@ dotplot_marker(dataintg,
                output = name,
                height = 6)
 ```
+![图片](https://github.com/user-attachments/assets/af7ef1fa-193f-4715-acdc-5765d7ca6e90)
 
 
 This visualization specifically delineates the comparison between the control and experimental groups
@@ -197,7 +191,7 @@ source("data/Other functions.R")
 
 prop_density(datafilt = datafilt,
              group = "group", # grouping information
-             coord = "umap_harmony")
+             coord = "umap")
 
 # Back-to-back plot
 
@@ -211,6 +205,9 @@ prop_back2back(datafilt = datafilt,
 input <- data.frame(table(dataimmu$sample, dataimmu$celltype_sig2))
 prop_plot_hca(input, rotate = 45, decreasing = T, species = "human")
 ```
+![图片](https://github.com/user-attachments/assets/35e35a93-5075-4392-adfd-0348b746436f)
+
+More analysis and visualization capabilities will be introduced in upcoming updates.
 
  <br>
 

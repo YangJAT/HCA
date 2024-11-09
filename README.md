@@ -21,6 +21,9 @@ remotes::install_github("carmonalab/scGate", ref="v1.2.0")
 # download future_1.31.0.tar.gz from https://cran.r-project.org/src/contrib/Archive/future/
 install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source")
 
+#install our package
+devtools::install_github('YangJAT/HCA')
+
 ```
 ### Memory issues
 We recommend utilizing a high-memory server for optimal performance with this package. Running it on a personal computer is possible, though it may result in substantially slower processing speeds.

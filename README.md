@@ -22,6 +22,7 @@ remotes::install_github("carmonalab/scGate", ref="v1.2.0")
 install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source")
 
 #install our package
+devtools::install_github('Liuzhicheng048/iCNA')
 devtools::install_github('YangJAT/HCA')
 
 ```

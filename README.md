@@ -3,16 +3,20 @@
 ![图片](https://github.com/user-attachments/assets/bdcd4e4b-7f14-4a06-a7c0-adb2615ff9ba)
 
 ## Note
-Two dependencies of this package have version constraints: <br>
-Seurat: version < 5. <br>
-scGate: version = 1.2.0. <br>
-
+This package has several dependencies with version constraints: <br>
+1. Seurat: version < 5. <br>
+2. scGate: version = 1.2.0. <br>
+3. future: version = 1.31.0 <br>
 ```r
+# scGate
 library(remotes)
-remotes::install_github("carmonalab/scGate", ref="v1.6.2")
-```
+remotes::install_github("carmonalab/scGate", ref="v1.2.0")
 
-this package will be updated to support V5 in the future.
+# future
+# download future_1.31.0.tar.gz from https://cran.r-project.org/src/contrib/Archive/future/
+install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source")
+
+```
 
 ## Abstract 
 This tutorial demonstrates how to use R packages for single-cell RNA data analysis, including cell type annotation, tumor cell annotation, and data integration.

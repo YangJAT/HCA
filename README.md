@@ -44,7 +44,7 @@ datafilt <- readRDS("data/sc_datafilt.rds")
 
 ```r
 non_epi <- c("EPCAM-", "CDH1-", "KRT7-", "KRT18-", "KRT19-", "ALB-", "AFP-") # for human
-non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-") for mouse
+non_epi <- c("Krt5-", "Krt14-", "Krt6a-", "Dsp-", "Krt17-", "Lgals7-") # for mouse
 
 #Annotating Immune Cells
 dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'human', # or mouse

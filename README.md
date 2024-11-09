@@ -48,9 +48,9 @@ dataimmu <- anno_immune(datafilt, scGate_DB = scGate_DB, organism = 'human', non
 #Annotating Tumor Cells
 datacanc <- anno_tumor(datafilt, scGate_DB = scGate_DB, 
                        organism = 'human', 
-                       thres_sig = 0.005, 
-                       thres_cor = 0.5, 
-                       ncore = 1, 
+                       thres_sig = 0.005, # Adjust this threshold based on scatter_plot.png
+                       thres_cor = 0.5, # Adjust this threshold based on scatter_plot.png
+                       ncore = 1, # Multi-core functionality is not available on Windows
                        isFilter = TRUE)
 ```
 Note: If the code runs successfully, an image (inferCNV/scatter_plot.png) will be generated in the current path. You can select the threshold range based on the scatter plot positions in the image.

@@ -46,6 +46,8 @@ scGate_DB <- readRDS("data/scGate_DB.rds")
 datafilt <- readRDS("data/sc_datafilt.rds")
 ```
 
+datafilt is a Seurat object requiring only essential cell filtering, with no need for further processing. 
+
  <br>
 
 ## Celltype annotation 

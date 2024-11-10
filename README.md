@@ -21,21 +21,13 @@ remotes::install_github("carmonalab/scGate", ref = "v1.2.0")
 # future
 # download future_1.31.0.tar.gz from https://cran.r-project.org/src/contrib/Archive/future/
 install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source") # Install from a local directory
-<<<<<<< Updated upstream
 
-# install our package
-=======
-
-<<<<<<< HEAD
 #Matrix
 # download Matrix_1.5-3 .tar.gz from https://cran.r-project.org/src/contrib/Archive/Matrix/
 install.packages("Matrix_1.5-3 .tar.gz", repos = NULL, type = "source")
 
-#install our package
-=======
+
 # install our package
->>>>>>> 6ba228917736fdd87d1a18c739b5ae08e3e8a161
->>>>>>> Stashed changes
 devtools::install_github('Liuzhicheng048/iCNA')
 devtools::install_github('YangJAT/HCA')
 

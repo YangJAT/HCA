@@ -21,7 +21,7 @@ remotes::install_github("carmonalab/scGate", ref = "v1.2.0")
 
 # Matrix
 # download Matrix_1.5-3.tar.gz from https://cran.r-project.org/src/contrib/Archive/Matrix/
-install.packages("Matrix_1.5-3 .tar.gz", repos = NULL, type = "source")
+install.packages("Matrix_1.5-3 .tar.gz", repos = NULL, type = "source") # Install from a local directory
 
 # future
 # download future_1.31.0.tar.gz from https://cran.r-project.org/src/contrib/Archive/future/

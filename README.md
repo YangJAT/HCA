@@ -10,21 +10,22 @@ This tutorial shows how to use HCA R package for single-cell RNA data analysis, 
 ### Dependency issues
 This package has several dependencies with version constraints: <br>
 1. Seurat: version <5 (excluding 4.9); 4.3 recommended <br>
-2. scGate: version = 1.2.0 <br>
-3. future: version = 1.31.0 <br>
-4. Matrix: version = 1.5-3 <br>
+2. Matrix: version = 1.5-3 <br>
+3. scGate: version = 1.2.0 <br>
+4. future: version = 1.31.0 <br>
+
 ```r
 # scGate
 library(remotes)
 remotes::install_github("carmonalab/scGate", ref = "v1.2.0")
 
+# Matrix
+# download Matrix_1.5-3.tar.gz from https://cran.r-project.org/src/contrib/Archive/Matrix/
+install.packages("Matrix_1.5-3 .tar.gz", repos = NULL, type = "source")
+
 # future
 # download future_1.31.0.tar.gz from https://cran.r-project.org/src/contrib/Archive/future/
 install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source") # Install from a local directory
-
-#Matrix
-# download Matrix_1.5-3.tar.gz from https://cran.r-project.org/src/contrib/Archive/Matrix/
-install.packages("Matrix_1.5-3 .tar.gz", repos = NULL, type = "source")
 
 
 # install our package

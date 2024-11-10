@@ -12,7 +12,7 @@ This package has several dependencies with version constraints: <br>
 1. Seurat: version <5 (excluding 4.9); 4.3 recommended <br>
 2. scGate: version = 1.2.0 <br>
 3. future: version = 1.31.0 <br>
-4.Matrix:version=1.5-3 <br>
+4. Matrix:version=1.5-3 <br>
 ```r
 # scGate
 library(remotes)

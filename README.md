@@ -12,7 +12,7 @@ This package has several dependencies with version constraints: <br>
 1. Seurat: version <5 (excluding 4.9); 4.3 recommended <br>
 2. scGate: version = 1.2.0 <br>
 3. future: version = 1.31.0 <br>
-4. Matrix:version=1.5-3 <br>
+4. Matrix: version = 1.5-3 <br>
 ```r
 # scGate
 library(remotes)
@@ -23,7 +23,7 @@ remotes::install_github("carmonalab/scGate", ref = "v1.2.0")
 install.packages("future_1.31.0.tar.gz", repos = NULL, type = "source") # Install from a local directory
 
 #Matrix
-# download Matrix_1.5-3 .tar.gz from https://cran.r-project.org/src/contrib/Archive/Matrix/
+# download Matrix_1.5-3.tar.gz from https://cran.r-project.org/src/contrib/Archive/Matrix/
 install.packages("Matrix_1.5-3 .tar.gz", repos = NULL, type = "source")
 
 
@@ -33,7 +33,7 @@ devtools::install_github('YangJAT/HCA')
 
 ```
 ### Memory issues
-We recommend utilizing a high-memory server for optimal performance with this package. Running it on a personal computer is possible, though it may result in substantially slower processing speeds.
+We recommend utilizing a high-memory server for optimal performance. 
 
  <br>
 
